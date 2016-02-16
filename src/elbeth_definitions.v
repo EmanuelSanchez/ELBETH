@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : Sun Sep 06 11:09:43 2015
+//  Last Modified : 2016-02-15 21:12:40
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -43,7 +43,8 @@
 		14	:	if_pc_select					Select: (0) pc + 4, (1)	branch, (2) exception
 		13	:	.								
 		12	: 	id_registers_stall			Stall the pippeline
-		11	:	id_alu_port_a_select			Select: (0) rs1, (1) pc, (2) forwarding		10 :	.
+		11	:	id_alu_port_a_select			Select: (0) rs1, (1) pc, (2) forwarding
+		10 :	.
 		9	:	id_alu_port_b_select			Select: (0) rs2, (1) inmediate, (2) forwarding
 		8	:	.
 		7	:	id_data_reg_mem_select		Select: alu_result/memory_data		
@@ -101,7 +102,7 @@
 `define OP_OR				4'd3
 `define OP_XOR				4'd4
 `define OP_SLT				4'd5
-`define OP_SLTU			4'd6
+`define OP_SLTU				4'd6
 `define OP_SLL				4'd7
 `define OP_SRL				4'd8
 `define OP_SRA				4'd9

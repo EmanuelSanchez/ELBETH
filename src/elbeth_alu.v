@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : alu.v
 //  Created On    : Tue Jan  19 06:40:00 2016
-//  Last Modified : 
+//  Last Modified : 2016-02-15 20:24:21
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -11,7 +11,7 @@
 //
 //  Description   : The Execution unit.
 //                  Performs the following operations:
-//                  - Arithmetic    (lista)
+//                  - Arithmetic   
 //                  - Logical			
 //                  - Shift			
 //                  - Comparison		
@@ -20,15 +20,16 @@
 `include "elbeth_definitions.v"
 
 module elbeth_alu(	
-	 input [31:0] 				data_a,					// values (12 bits) values for operation
-    input [31:0] 				data_b,					// values (12 bits) values for operation
-    input [3:0]				operation,				// code of the corresponding operation
-	 output reg [31:0] 		alu_result
+	input [31:0] 				data_a,					// values (32 bits) values for operation
+    input [31:0] 				data_b,					// values (32 bits) values for operation
+    input [3:0]				operation,					// code of the corresponding operation
+	output reg [31:0] 		alu_result
     );
 	 
 	 wire shift_shamt;
 	 
 	 assign shift_shamt = data_b;
+
 //--------------------------------------------------------------------------
 // Operation Select
 //--------------------------------------------------------------------------
