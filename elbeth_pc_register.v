@@ -12,7 +12,7 @@
 //  Description   : Program Counter
 //==================================================================================================
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-module pc_register(
+module elbeth_pc_register(
 	 input						clk,
 	 input						rst,
 	 input						ctrl_stall,
@@ -24,4 +24,4 @@ module pc_register(
 		pc <= (rst) ? 32'b0 : ((ctrl_stall) ? pc : next_pc);
 	end
 
-endmodule
+endmodule	//elbeth_pc_register
