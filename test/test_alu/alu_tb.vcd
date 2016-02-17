@@ -1,0 +1,65 @@
+$date
+	Mon Feb 15 21:38:53 2016
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module alu_tb $end
+$var wire 32 ! alu_result [31:0] $end
+$var reg 32 " data_a [31:0] $end
+$var reg 32 # data_b [31:0] $end
+$var reg 4 $ operation [3:0] $end
+$scope module alu1 $end
+$var wire 32 % data_a [31:0] $end
+$var wire 32 & data_b [31:0] $end
+$var wire 4 ' operation [3:0] $end
+$var wire 1 ( shift_shamt $end
+$var reg 32 ) alu_result [31:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+bx )
+x(
+bx '
+bx &
+bx %
+bx $
+bx #
+bx "
+bx !
+$end
+#50000
+0(
+b111 )
+b111 !
+b0 $
+b0 '
+b100 #
+b100 &
+b11 "
+b11 %
+#100000
+b11 )
+b11 !
+b1 $
+b1 '
+b10 #
+b10 &
+b101 "
+b101 %
+#150000
+1(
+b1111 )
+b1111 !
+b11 $
+b11 '
+b101 #
+b101 &
+b1010 "
+b1010 %
+#200000
