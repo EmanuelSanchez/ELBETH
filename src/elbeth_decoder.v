@@ -22,17 +22,17 @@
 
 module elbeth_decoder(
     input 	[6:0] 				opcode,
-	 input 	[4:0]					inst_0,
-	 input 	[2:0]					inst_1,
-	 input 	[4:0]					inst_2,
-	 input 	[4:0]					inst_3,
-	 input 	[6:0]					inst_4,
+	input 	[4:0]					inst_0,
+	input 	[2:0]					inst_1,
+	input 	[4:0]					inst_2,
+	input 	[4:0]					inst_3,
+	input 	[6:0]					inst_4,
     output reg [31:0]			id_offset_branch,
-	 output reg	[3:0]				id_op_branch,
+	output reg	[3:0]				id_op_branch,
     output reg [4:0] 			id_rs1_addr,
     output reg [4:0] 			id_rs2_addr,
-	 output reg [4:0] 			id_rd_addr,
-	 output reg [31:0] 			id_imm_shamt,
+	output reg [4:0] 			id_rd_addr,
+	output reg [31:0] 			id_imm_shamt,
     output reg [3:0] 			id_op_alu
     );
 
@@ -69,20 +69,31 @@ module elbeth_decoder(
 				`OP_TYPE_I :	begin
 						id_rd_addr <= rd;
 						id_rs1_addr <= rs1;
-						id_imm_shamt <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:0]}};
 						case	(funct3)
-								3'd0 :	begin		id_op_alu = `OP_ADD; end
+								3'd0 :	begin		
+										id_op_alu = `OP_ADD;
+										id_imm_shamt <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:0]}}; end
 								3'd1 :	begin		
 										id_op_alu <= `OP_SLL;
-										id_imm_shamt <= { 7'b0, inst_3}; end
-								3'd2 :	begin		id_op_alu = `OP_SLT; end
-								3'd3 :	begin		id_op_alu = `OP_SLTU; end
-								3'd4 :	begin		id_op_alu = `OP_XOR; end
+										id_imm_shamt <= { 27'b0, inst_3}; end
+								3'd2 :	begin
+										id_op_alu = `OP_SLT;
+										id_imm_shamt <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:0]}}; end
+								3'd3 :	begin
+										id_op_alu = `OP_SLTU;
+										id_imm_shamt <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:0]}}; end
+								3'd4 :	begin
+										id_op_alu = `OP_XOR;
+										id_imm_shamt <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:0]}}; end
 								3'd5 :	begin		
 										id_op_alu <= (funct7) ? `OP_SRA : `OP_SRL;
-										id_imm_shamt <= { 7'b0, inst_3}; end
-								3'd6 :	begin		id_op_alu = `OP_OR; end
-								3'd7 :	begin		id_op_alu = `OP_AND; end
+										id_imm_shamt <= { 27'b0, inst_3}; end
+								3'd6 :	begin
+										id_op_alu = `OP_OR;
+										id_imm_shamt <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:0]}}; end
+								3'd7 :	begin
+										id_op_alu = `OP_AND;
+										id_imm_shamt <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:0]}}; end
 								default : begin	id_op_alu = 3'bx; end
 						endcase
 				end
