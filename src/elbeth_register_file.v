@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : register_file.v
 //  Created On    : Tue Jan  19 06:40:00 2016
-//  Last Modified : 
+//  Last Modified : 2016-02-22 09:07:42
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth 
 //  Company       : Universidad Simón Bolívar
@@ -15,13 +15,13 @@
 
 module elbeth_register_file(
     input						clk,						// clock
-	 input [4:0] 				id_rs1_addr,				//	dirección del registro "a" a leer
+	input [4:0] 				id_rs1_addr,				//	dirección del registro "a" a leer
     input [4:0] 				id_rs2_addr,				// dirección del registro "b" a leer
     input [31:0] 				rd_data,					// dato a escribir en "d"
     input [4:0] 				rd_addr,						// dirección del registro "d" a escribir
-	 input						ctrl_w_enable,			// señal de control para activar la escritura
-    output [31:0] 			id_rs1_data,				// dato del registro "a"
-    output [31:0] 			id_rs2_data					// dato del registro "a"
+	input						ctrl_w_enable,			// señal de control para activar la escritura
+    output [31:0] 				id_rs1_data,				// dato del registro "a"
+    output [31:0] 				id_rs2_data					// dato del registro "a"
     );
 	 
 	reg [31:0]					gp_register [1:31];

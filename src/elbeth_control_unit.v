@@ -1,42 +1,41 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    08:43:36 02/10/2016 
-// Design Name: 
-// Module Name:    elbeth_control_unit 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//==================================================================================================
+//  Filename      : elbeth_control_unit.v
+//  Created On    : Mon Jan  31 09:46:00 2016
+//  Last Modified : 2016-02-24 09:31:26
+//  Revision      : 0.1
+//  Author        : Emanuel Sánchez & Ninisbeth Segovia
+//  Company       : Universidad Simón Bolívar
+//  Email         : emanuelsab@gmail.com & ninisbeth_segovia@hotmail.com
 //
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+//  Description   : Memory Ram with Dual port
+//==================================================================================================
+////////////////////////////////////////////////////////////////////////////////////////////////////
 `include "elbeth_definitions.v"
 
 module elbeth_control_unit(
-	 input							rst,
-    input 	[6:0] 				if_opcode,
-	 input	[3:0]					if_funct3,
-	 input							exs_mem_ready,
+	input							rst,
+    input 	[6:0] 					if_opcode,
+	input	[3:0]					if_funct3,
+	input							imem_ready,
+	input							dmem_ready,
+	input							imem_request_stall,
+	input							dmem_request_stall,
 	 
-	 output 	[1:0]					if_pc_select,
+	output 	[1:0]					if_pc_select,
+	output							if_imem_en,
+	output							if_
     output							id_registers_stall,	 
-	 output	[1:0]					id_alu_port_a_select,
-	 output	[1:0]					id_alu_port_b_select,
-	 output							id_data_w_mem_select,
-	 output							id_data_w_reg_select,
-	 output							id_reg_w,
-	 output 							id_mem_en,
-	 output							id_mem_rw,
-	 output	[3:0]					id_data_size_mem,
-	 output							id_data_sign_mem
+	output	[1:0]					id_alu_port_a_select,
+	output	[1:0]					id_alu_port_b_select,
+	output							id_data_w_reg_select,
+	output							id_reg_w,
+	output 							id_mem_en,
+	output	[3:0]					id_data_size_mem,
+	output							id_data_sign_mem,
+	
+	output	[2:0]					pipeline_stall
     );
 
 	reg		[14:0]		 datapath;
@@ -52,17 +51,21 @@ module elbeth_control_unit(
 	assign	id_data_sign_mem		= (rst) ? 1'b0 : datapath[0];
 	
 /*
+//--------------------------------------------------------------------------
+// 	Control vectors
+//--------------------------------------------------------------------------	
   --------------------------------------------------------------------------------
      Bit     Name                		Description
   --------------------------------------------------------------------------------
 		14	:	if_pc_select					Select: (0) pc + 4, (1)	branch, (2) exception
 		13	:	.								
-		12	: 	id_registers_stall			Stall the pippeline
-		11	:	id_alu_port_a_select			Select: (0) rs1, (1) pc, (2) forwarding		10 :	.
+		12	: 	id_registers_stall				Stall the pipeline
+		11	:	id_alu_port_a_select			Select: (0) rs1, (1) pc, (2) forwarding
+		10 :	.
 		9	:	id_alu_port_b_select			Select: (0) rs2, (1) inmediate, (2) forwarding
 		8	:	.
-		7	:	id_data_reg_mem_select		Select: alu_result/memory_data		
-		6	:	id_reg_w							Write register enable
+		7	:	id_data_reg_mem_select			Select: alu_result/memory_data		
+		6	:	id_reg_w						Write register enable
 		5	:	id_mem_en						Data Memory enable
 		4	:	id_data_size_mem 				Size of bytes to read o write: 	(0000) Write enable = 0
 		3	:	.																				(0001) byte & Write enable = 1
@@ -115,5 +118,24 @@ module elbeth_control_unit(
 				default : begin datapath = 15'bx; end
 		endcase
 	end
-	
+
+//--------------------------------------------------------------------------
+// Pipeline Stall
+//--------------------------------------------------------------------------	
+
+/*
+  --------------------------------------------------------------------------------
+     Bit     Description
+  --------------------------------------------------------------------------------
+	  2		stall PC register
+	  1		stall if_id register
+	  0		stall id_exs register
+*/
+
+	always @(*) begin :
+		pipeline_stall = (imem_request_stall) ? `PC_STALL;
+		pipeline_stall = (dmem_request_stall) ? `ID_IF_STALL;
+		
+	end
+
 endmodule

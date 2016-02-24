@@ -1,42 +1,43 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    21:56:19 01/31/2016 
-// Design Name: 
-// Module Name:    core 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//==================================================================================================
+//  Filename      : elbeth_core.v
+//  Created On    : Mon Jan  31 09:46:00 2016
+//  Last Modified : 2016-02-22 14:19:55
+//  Revision      : 0.1
+//  Author        : Emanuel Sánchez & Ninisbeth Segovia
+//  Company       : Universidad Simón Bolívar
+//  Email         : emanuelsab@gmail.com & ninisbeth_segovia@hotmail.com
 //
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+//  Description   : Core
+//==================================================================================================
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module core(
     input			 	 clk,
     input				 rst,
-	 //Instruction Memory
-	 input  [31:0]		 imem_r_data,		//douta = instruction
-	 output [31:0]		 imem_addr,			//addra  = pc
-	 //Data Memory
-	 input  [31:0]		 dmem_r_data,		//doutb = data
-	 output [31:0]		 dmem_addr,			//addrb = alu_result
-	 output [31:0]		 dmem_enb,
-	 output [3:0]		 dmem_data_size,
-	 output [31:0]		 dmem_w_data		
+	//Instruction memory
+	input  [31:0]		 imem_r_data,		//douta = instruction
+	input  				 imem_ready,
+	input 				 imem_error,
+	output [31:0]		 imem_addr,			//addra  = pc
+	output 				 imem_en,
+	output [3:0]		 imem_wr,
+
+	//Data memory
+	input  [31:0]		 dmem_r_data,		//doutb = data
+	input 				 dmem_ready,
+	input 				 dmem_error,
+	output [31:0]		 dmem_addr,			//addrb = alu_result
+	output [31:0]		 dmem_en,
+	output [3:0]		 dmem_data_size,
+	output [31:0]		 dmem_w_data		
     );
 	 
-	 //Wires to Instruction Memory
+	 //Wires to instruction memory
 	 wire	  [31:0]		addres_data_memory;
 	 wire	  [31:0]		instrucion_memory;
-	 //Wires to Data Memory
+	 //Wires to data memory
 	 wire	  [31:0]		data_memory_out;
 	 wire	  [3:0]		size_data_memory;
 	
@@ -47,6 +48,10 @@ module core(
 	 wire					inst_2;
 	 wire					inst_3;
 	 wire					inst_4;
+
+	 wire 					pc_reg_stall;
+	 wire 					if_id_reg_stall;
+	 wire 					id_exs_reg_stall;
 	 
 	 assign	imem_r_data = if_instruction;
 	 assign	imem_addr 	= pc;
@@ -64,6 +69,11 @@ module core(
 	 assign inst_2 = id_instruction[19:15];
 	 assign inst_3 = id_instruction[24:20];
 	 assign inst_4 = id_instruction[31:25];
+
+	 //Ctrl stall pipeline
+	 assign pc_reg_stall = pipeline_stall[2];
+	 assign if_id_reg_stall = pipeline_stall[1];
+	 assign	id_exs_reg_stall = pipeline_stall[0];
 	 
 //--------------------------------------------------------------------------
 // IF stage
@@ -93,7 +103,7 @@ module core(
 		 .rst(rst),
 		 .next_pc(next_pc), 
 		 //In Control Signals
-		 .ctrl_stall(ctrl_stall),
+		 .ctrl_stall(pc_reg_stall),
 		 //Outputs
 		 .pc(pc)
 		 );
@@ -105,7 +115,7 @@ module core(
 		 .if_instruction(if_instruction), 
 		 .if_pc(pc), 
 		 //In Control Signals
-		 .ctrl_stall(ctrl_stall), 
+		 .ctrl_stall(if_id_reg_stall), 
 		 //Outputs
 		 .id_instruction(id_instruction),
 		 .id_pc(id_pc)
@@ -170,7 +180,7 @@ module core(
 		 .id_rd_addr(id_rd_addr), 
 		 .id_imm_shamt(id_imm_shamt), 
 		 //In Control Signals
-		 .id_ctrl_stall(id_ctrl_stall), 
+		 .id_ctrl_stall(id_exs_reg_stall), 
 		 .id_ctrl_alu_port_a_select(id_alu_port_a_select), 
 		 .id_ctrl_alu_port_b_select(id_alu_port_b_select),  
 		 .id_ctrl_data_w_reg_select(id_data_w_reg_select), 
@@ -270,7 +280,8 @@ module core(
 		 .id_reg_w(id_reg_w),
 		 .id_mem_en(id_mem_en), 
 		 .id_data_size_mem(id_data_size_mem), 
-		 .id_data_sign_mem(id_data_sign_mem)
+		 .id_data_sign_mem(id_data_sign_mem),
+		 .pipeline_stall(pipeline_stall)
 		 );
 
 endmodule

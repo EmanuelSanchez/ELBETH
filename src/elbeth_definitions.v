@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-02-15 21:12:40
+//  Last Modified : 2016-02-22 13:57:12
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -63,15 +63,15 @@
 `define I_LOADS_B_CTRL_VECTOR		14'b001000111100001
 `define I_LOADS_H_CTRL_VECTOR		14'b001000111100001
 `define I_LOADS_W_CTRL_VECTOR		14'b001000111100001
-`define I_LOADS_UB_CTRL_VECTOR	14'b001000111100000
-`define I_LOADS_UH_CTRL_VECTOR	14'b001000111100000
+`define I_LOADS_UB_CTRL_VECTOR		14'b001000111100000
+`define I_LOADS_UH_CTRL_VECTOR		14'b001000111100000
 `define I_JALR_CTRL_VECTOR			14'b0100101010xxxxx
 `define S_W_CTRL_VECTOR				14'b0010001x011000x
 `define S_H_CTRL_VECTOR				14'b0010001x010010x
 `define S_B_CTRL_VECTOR				14'b0010001x010001x
 `define SB_CTRL_VECTOR				14'b011xxxxx00xxxxx
 `define U_LUI_CTRL_VECTOR			14'b0000001010xxxxx
-`define U_AUIPC_CTRL_VECTOR		14'b0000101010xxxxx
+`define U_AUIPC_CTRL_VECTOR			14'b0000101010xxxxx
 `define UJ_JAL_CTRL_VECTOR			14'b0100101010xxxxx
 
 
@@ -114,13 +114,13 @@
 //--------------------------------------------------------------------------
 
 `define OP_JAL				3'd0
-`define OP_JALR			3'd1
+`define OP_JALR				3'd1
 `define OP_BEQ				3'd2
 `define OP_BNE				3'd3
 `define OP_BLT				3'd4
 `define OP_BGE				3'd5
-`define OP_BLTU			3'd6
-`define OP_BGEU			3'd7
+`define OP_BLTU				3'd6
+`define OP_BGEU				3'd7
 
 //--------------------------------------------------------------------------
 // Ctrl Size Data Memory
@@ -129,3 +129,11 @@
 `define BYTE				4'b0001
 `define HALFWORD			4'b0010
 `define WORD				4'b1000
+
+//--------------------------------------------------------------------------
+// Pipeline Stall
+//--------------------------------------------------------------------------
+
+`define PC_STALL			2'b100
+`define IF_STALL			2'b110
+`define IF_ID_STALL			2'b111
