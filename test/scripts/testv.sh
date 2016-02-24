@@ -3,7 +3,8 @@
 #-------------------------------------------------------------------------------
 #
 # File Name: testbench_verilog
-#
+# Created On    : Mon Jan  31 09:46:00 2016
+# Last Modified : 2016-02-24 09:31:26
 # Author:
 #             - Emanuel Sánchez <emanuelsab@gmail.com>
 # Description:
@@ -11,20 +12,41 @@
 #       Arguments:
 #           1.- Input:  verilog module to simulate
 #           2.- Input:  name of the test bench verilog module
-#-------------------------------------------------------------------------------
 # Instructions:
-#       1- Open the terminal (Ctrl + Alt + T)
-#       2- Go to test benche folder
-#       3- Execute: sh testv.sh name_verilog_module name_verilog_test_bench
+#		1- Copy this script in the test bench folder
+#       2- Open the terminal (Ctrl + Alt + T)
+#       3- Go to test bench folder
+#       4- Execute: sh testv.sh name_verilog_module name_verilog_test_bench
 #       
 #-------------------------------------------------------------------------------
 
 ###############################################################################
-#                       Files names amd extentions 					          #
+#                            Parameter Check                                  #
+###############################################################################
+EXPECTED_ARGS=2
+if [ $# -ne $EXPECTED_ARGS ]; then
+    echo
+    echo -e "ERROR\t: wrong number of arguments"
+    echo
+    exit 1
+fi
+
+###############################################################################
+#                       Sets Folders                                          #
 ###############################################################################
 
-file_verilog=$1.v
-file_verilog_tb=$2.v
+SIMULATING_FOLDER="$(pwd)"
+cd ../
+ROOT_FOLDER="$(pwd)"
+cd src
+SOURCES_FOLDER=$ROOT_FOLDER/src
+
+###############################################################################
+#                       Set Files and extentions                              #
+###############################################################################
+
+file_verilog=$SOURCES_FOLDER/$1.v
+file_verilog_tb=$SIMULATING_FOLDER/$2.v
 file_vvp=$2.vvp
 file_vcd=$2.vcd
 
@@ -67,6 +89,8 @@ fi
 #                 ejecute the verilog compile file                            #
 ###############################################################################
 
+cd /$SIMULATING_FOLDER
+mv /$SOURCES_FOLDER/$file_vvp /$SIMULATING_FOLDER
 vvp $file_vvp
 
 ###############################################################################
