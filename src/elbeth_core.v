@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-22 14:19:55
+//  Last Modified : 2016-02-24 14:50:43
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -70,10 +70,8 @@ module core(
 	 assign inst_3 = id_instruction[24:20];
 	 assign inst_4 = id_instruction[31:25];
 
-	 //Ctrl stall pipeline
-	 assign pc_reg_stall = pipeline_stall[2];
-	 assign if_id_reg_stall = pipeline_stall[1];
-	 assign	id_exs_reg_stall = pipeline_stall[0];
+	 //PC register stall
+	 assign pc_reg_stall = if_stall | id_stall;
 	 
 //--------------------------------------------------------------------------
 // IF stage

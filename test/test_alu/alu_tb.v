@@ -1,10 +1,12 @@
 module alu_tb;
+	// inputs and outputs
 
 	reg [31:0]	data_a;
 	reg [31:0]	data_b;
 	reg [3:0]	operation;
 	wire [31:0]	alu_result;
 
+	// test process
 	initial
 		begin
 			$dumpfile("alu_tb.vcd");
@@ -29,14 +31,19 @@ module alu_tb;
 			data_b = 32'b0101;
 			operation = 4'd3;
 
+			//test vector #4: SLT
+			#50
+			data_a = 32'd3;
+			data_b = 32'd4;
+			operation = 4'd5;
+
 			//finish
 			#50 
 			$finish;
 
 		end
 
-
-
+	//test module instantiation
 	elbeth_alu alu1 (data_a, data_b, operation, alu_result);
 
 endmodule // alu_tb

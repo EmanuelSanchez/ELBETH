@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_control_unit.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-24 09:31:26
+//  Last Modified : 2016-02-24 14:47:59
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -18,6 +18,7 @@ module elbeth_control_unit(
 	input							rst,
     input 	[6:0] 					if_opcode,
 	input	[3:0]					if_funct3,
+	//Instruction memory
 	input							imem_ready,
 	input							dmem_ready,
 	input							imem_request_stall,
@@ -35,21 +36,43 @@ module elbeth_control_unit(
 	output	[3:0]					id_data_size_mem,
 	output							id_data_sign_mem,
 	
-	output	[2:0]					pipeline_stall
+	output							if_stall,
+	output							id_stall
     );
 
 	reg		[14:0]		 datapath;
 
-	assign	if_pc_select 			= (rst) ? 2'b0 : datapath[14:13];
-	assign	id_registers_stall 	= (rst) ? 1'b0 : datapath[12];
+	assign	if_pc_select 		 = (rst) ? 2'b0 : datapath[14:13];
+	assign	id_registers_stall 	 = (rst) ? 1'b0 : datapath[12];
 	assign	id_alu_port_a_select = (rst) ? 2'b0 : datapath[11:10];
 	assign	id_alu_port_b_select = (rst) ? 2'b0 : datapath[9:8];
 	assign	id_data_w_reg_select = (rst) ? 1'b0 : datapath[7];
-	assign	id_reg_w 				= (rst) ? 1'b0 :datapath[6];
-	assign	id_mem_en      		= (rst) ? 1'b0 : datapath[5];
-	assign	id_data_size_mem 	 	= (rst) ? 2'b0 : datapath[4:1];
-	assign	id_data_sign_mem		= (rst) ? 1'b0 : datapath[0];
+	assign	id_reg_w 			 = (rst) ? 1'b0 :datapath[6];
+	assign	id_mem_en      		 = (rst) ? 1'b0 : datapath[5];
+	assign	id_data_size_mem 	 = (rst) ? 2'b0 : datapath[4:1];
+	assign	id_data_sign_mem	 = (rst) ? 1'b0 : datapath[0];
 	
+	assign	if_stall = ()
+
+//--------------------------------------------------------------------------
+// Pipeline Stall
+//--------------------------------------------------------------------------	
+
+/*
+  --------------------------------------------------------------------------------
+     Bit     Description
+  --------------------------------------------------------------------------------
+	  2		stall PC register
+	  1		stall if_id register
+	  0		stall id_exs register
+*/
+
+	always @(*) begin :
+		pipeline_stall = (imem_request_stall) ? `PC_STALL;
+		pipeline_stall = (dmem_request_stall) ? `ID_IF_STALL;
+		
+	end
+
 /*
 //--------------------------------------------------------------------------
 // 	Control vectors
@@ -117,25 +140,6 @@ module elbeth_control_unit(
 				end
 				default : begin datapath = 15'bx; end
 		endcase
-	end
-
-//--------------------------------------------------------------------------
-// Pipeline Stall
-//--------------------------------------------------------------------------	
-
-/*
-  --------------------------------------------------------------------------------
-     Bit     Description
-  --------------------------------------------------------------------------------
-	  2		stall PC register
-	  1		stall if_id register
-	  0		stall id_exs register
-*/
-
-	always @(*) begin :
-		pipeline_stall = (imem_request_stall) ? `PC_STALL;
-		pipeline_stall = (dmem_request_stall) ? `ID_IF_STALL;
-		
 	end
 
 endmodule

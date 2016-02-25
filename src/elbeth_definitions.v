@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-02-22 13:57:12
+//  Last Modified : 2016-02-24 14:47:12
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -134,6 +134,6 @@
 // Pipeline Stall
 //--------------------------------------------------------------------------
 
-`define PC_STALL			2'b100
-`define IF_STALL			2'b110
-`define IF_ID_STALL			2'b111
+`define IF_STALL			2'b10
+`define ID_STALL 			2'b01
+`define PIPELINE_STALL		2'b11
