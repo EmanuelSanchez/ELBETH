@@ -39,10 +39,8 @@ SCRIPT_FOLDER="$(pwd)"
 cd ../
 TESTS_FOLDER="$(pwd)"
 SIMULATING_FOLDER=$TESTS_FOLDER/$3
-
 cd ../
 ROOT_FOLDER="$(pwd)"
-cd src
 SOURCES_FOLDER=$ROOT_FOLDER/src
 
 ###############################################################################
@@ -83,7 +81,12 @@ fi
 #                       Compile verilog module                                #
 ###############################################################################
 
+cp $file_verilog $SIMULATING_FOLDER/$1.v
+cp $SOURCES_FOLDER/elbeth_definitions.v $SIMULATING_FOLDER/elbeth_definitions.v 
+cd $SIMULATING_FOLDER
 iverilog -o $file_vvp $file_verilog_tb $file_verilog
+rm $SIMULATING_FOLDER/$1.v
+rm $SIMULATING_FOLDER/elbeth_definitions.v 
 
 ###############################################################################
 #                       Check if module was compiled                          #
@@ -100,8 +103,6 @@ fi
 #                 ejecute the verilog compile file                            #
 ###############################################################################
 
-cd /$SIMULATING_FOLDER
-mv /$SOURCES_FOLDER/$file_vvp /$SIMULATING_FOLDER
 vvp $file_vvp
 rm /$SIMULATING_FOLDER/$file_vvp
 
