@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-02-24 14:47:12
+//  Last Modified : 2016-02-25 00:41:39
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -42,13 +42,13 @@
   --------------------------------------------------------------------------------
 		14	:	if_pc_select					Select: (0) pc + 4, (1)	branch, (2) exception
 		13	:	.								
-		12	: 	id_registers_stall			Stall the pippeline
+		12	: 	id_registers_stall				Stall the pippeline
 		11	:	id_alu_port_a_select			Select: (0) rs1, (1) pc, (2) forwarding
 		10 :	.
 		9	:	id_alu_port_b_select			Select: (0) rs2, (1) inmediate, (2) forwarding
 		8	:	.
-		7	:	id_data_reg_mem_select		Select: alu_result/memory_data		
-		6	:	id_reg_w							Write register enable
+		7	:	id_data_reg_mem_select			Select: alu_result/memory_data		
+		6	:	id_reg_w						Write register enable
 		5	:	id_mem_en						Data Memory enable
 		4	:	id_data_size_mem 				Size of bytes to read o write: 	(0000) Write enable = 0
 		3	:	.																				(0001) byte & Write enable = 1
@@ -57,40 +57,21 @@
 		0	:	id_data_sign_mem		 		Unsigned/Signed data memory
 */
 
-											//  65432109876543210
-`define R_CTRL_VECTOR				14'b0000000010xxxxx
-`define I_CTRL_VECTOR				14'b0000001010xxxxx
-`define I_LOADS_B_CTRL_VECTOR		14'b001000111100001
-`define I_LOADS_H_CTRL_VECTOR		14'b001000111100001
-`define I_LOADS_W_CTRL_VECTOR		14'b001000111100001
-`define I_LOADS_UB_CTRL_VECTOR		14'b001000111100000
-`define I_LOADS_UH_CTRL_VECTOR		14'b001000111100000
-`define I_JALR_CTRL_VECTOR			14'b0100101010xxxxx
-`define S_W_CTRL_VECTOR				14'b0010001x011000x
-`define S_H_CTRL_VECTOR				14'b0010001x010010x
-`define S_B_CTRL_VECTOR				14'b0010001x010001x
-`define SB_CTRL_VECTOR				14'b011xxxxx00xxxxx
-`define U_LUI_CTRL_VECTOR			14'b0000001010xxxxx
-`define U_AUIPC_CTRL_VECTOR			14'b0000101010xxxxx
-`define UJ_JAL_CTRL_VECTOR			14'b0100101010xxxxx
-
-
-
-//--------------------------------------------------------------------------
-// ALU operations
-//--------------------------------------------------------------------------
-
-//`define INSTR_OPCODE       6:0
-//`define INSTR_RD          11:7
-//`define INSTR_FUNCT_3     14:12
-//`define INSTR_RS1         19:15
-//`define INSTR_RS2         24:20
-//`define INSTR_FUNCT_7     32:25
-
-// FALTA ASIGNAR 
-// `define R0      5'b00000 A UN VALOR CERO
-
-
+`define R_CTRL_VECTOR				15'b0000000010xxxxx
+`define I_CTRL_VECTOR				15'b0000001010xxxxx
+`define I_LOADS_B_CTRL_VECTOR		15'b001000111100001
+`define I_LOADS_H_CTRL_VECTOR		15'b001000111100001
+`define I_LOADS_W_CTRL_VECTOR		15'b001000111100001
+`define I_LOADS_UB_CTRL_VECTOR		15'b001000111100000
+`define I_LOADS_UH_CTRL_VECTOR		15'b001000111100000
+`define I_JALR_CTRL_VECTOR			15'b0100101010xxxxx
+`define S_W_CTRL_VECTOR				15'b0010001x011000x
+`define S_H_CTRL_VECTOR				15'b0010001x010010x
+`define S_B_CTRL_VECTOR				15'b0010001x010001x
+`define SB_CTRL_VECTOR				15'b011xxxxx00xxxxx
+`define U_LUI_CTRL_VECTOR			15'b0000001010xxxxx
+`define U_AUIPC_CTRL_VECTOR			15'b0000101010xxxxx
+`define UJ_JAL_CTRL_VECTOR			15'b0100101010xxxxx
 
 //--------------------------------------------------------------------------
 // ALU operations
@@ -123,7 +104,7 @@
 `define OP_BGEU				3'd7
 
 //--------------------------------------------------------------------------
-// Ctrl Size Data Memory
+// Size data memory
 //--------------------------------------------------------------------------
 
 `define BYTE				4'b0001
@@ -131,9 +112,10 @@
 `define WORD				4'b1000
 
 //--------------------------------------------------------------------------
-// Pipeline Stall
+// Hazard unit
 //--------------------------------------------------------------------------
 
-`define IF_STALL			2'b10
-`define ID_STALL 			2'b01
-`define PIPELINE_STALL		2'b11
+`define RD_ZERO				5'b0
+`define MEM_READ			4'b0
+`define FROM_ALU			1'b0
+`define FROM_MEM			1'b1

@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-24 14:50:43
+//  Last Modified : 2016-02-24 20:47:05
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -17,7 +17,7 @@ module core(
     input			 	 clk,
     input				 rst,
 	//Instruction memory
-	input  [31:0]		 imem_r_data,		//douta = instruction
+	input  [31:0]		 imem_in_data,		//douta = instruction
 	input  				 imem_ready,
 	input 				 imem_error,
 	output [31:0]		 imem_addr,			//addra  = pc
@@ -25,7 +25,7 @@ module core(
 	output [3:0]		 imem_wr,
 
 	//Data memory
-	input  [31:0]		 dmem_r_data,		//doutb = data
+	input  [31:0]		 dmem_in_data,		//doutb = data
 	input 				 dmem_ready,
 	input 				 dmem_error,
 	output [31:0]		 dmem_addr,			//addrb = alu_result
@@ -39,7 +39,7 @@ module core(
 	 wire	  [31:0]		instrucion_memory;
 	 //Wires to data memory
 	 wire	  [31:0]		data_memory_out;
-	 wire	  [3:0]		size_data_memory;
+	 wire	  [3:0]			size_data_memory;
 	
 	 wire	  [31:0]		id_instruction;
 	 wire					opcode;
@@ -53,10 +53,10 @@ module core(
 	 wire 					if_id_reg_stall;
 	 wire 					id_exs_reg_stall;
 	 
-	 assign	imem_r_data = if_instruction;
-	 assign	imem_addr 	= pc;
+	 assign	imem_in_data = if_instruction;
+	 assign	imem_addr    = pc;
 	 
-	 assign	dmem_r_data 	= data_memory_out;
+	 assign	dmem_in_data 	= data_memory_out;
 	 assign	dmem_addr 		= alu_result;
 	 assign	dmem_enb 		= exs_ctrl_mem_en;
 	 assign	dmem_data_size	= size_data_memory;
@@ -72,6 +72,10 @@ module core(
 
 	 //PC register stall
 	 assign pc_reg_stall = if_stall | id_stall;
+
+	 //Instruction memory asignaments
+	 assign imem_en = 1'b1;
+	 assign imem_wr = 4'b0;
 	 
 //--------------------------------------------------------------------------
 // IF stage
