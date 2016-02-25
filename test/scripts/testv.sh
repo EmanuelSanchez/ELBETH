@@ -12,11 +12,11 @@
 #       Arguments:
 #           1.- Input:  verilog module to simulate
 #           2.- Input:  name of the test bench verilog module
+#-------------------------------------------------------------------------------
 # Instructions:
-#		1- Copy this script in the test bench folder
-#       2- Open the terminal (Ctrl + Alt + T)
-#       3- Go to test bench folder
-#       4- Execute: sh testv.sh name_verilog_module name_verilog_test_bench
+#       1- Open the terminal (Ctrl + Alt + T)
+#       2- Go to test benche folder
+#       3- Execute: sh testv.sh name_verilog_module name_verilog_test_bench
 #       
 #-------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ fi
 ###############################################################################
 
 SIMULATING_FOLDER="$(pwd)"
-cd ../
+cd ../..
 ROOT_FOLDER="$(pwd)"
 cd src
 SOURCES_FOLDER=$ROOT_FOLDER/src
