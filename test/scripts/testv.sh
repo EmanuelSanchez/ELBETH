@@ -23,7 +23,7 @@
 ###############################################################################
 #                            Parameter Check                                  #
 ###############################################################################
-EXPECTED_ARGS=2
+EXPECTED_ARGS=3
 if [ $# -ne $EXPECTED_ARGS ]; then
     echo
     echo -e "ERROR\t: wrong number of arguments"
@@ -35,8 +35,12 @@ fi
 #                       Sets Folders                                          #
 ###############################################################################
 
-SIMULATING_FOLDER="$(pwd)"
-cd ../..
+SCRIPT_FOLDER="$(pwd)"
+cd ../
+TESTS_FOLDER="$(pwd)"
+SIMULATING_FOLDER=$TESTS_FOLDER/$3
+
+cd ../
 ROOT_FOLDER="$(pwd)"
 cd src
 SOURCES_FOLDER=$ROOT_FOLDER/src
@@ -68,6 +72,13 @@ if [ ! -e $file_verilog_tb ]; then
     exit 1
 fi
 
+if [ ! -e $SIMULATING_FOLDER ]; then
+    echo
+    echo -e "ERROR:\t Test folder doesn't exist:  $SIMULATING_FOLDER"
+    echo
+    exit 1
+fi
+
 ###############################################################################
 #                       Compile verilog module                                #
 ###############################################################################
@@ -80,7 +91,7 @@ iverilog -o $file_vvp $file_verilog_tb $file_verilog
 
 if [ ! -e $file_vvp ]; then
     echo
-    echo -e "ERROR:\t The vvp file was not create:  $file_vvp"
+    echo -e "ERROR:\t The files file was not compled:  $file_vvp"
     echo
     exit 1
 fi
@@ -92,6 +103,7 @@ fi
 cd /$SIMULATING_FOLDER
 mv /$SOURCES_FOLDER/$file_vvp /$SIMULATING_FOLDER
 vvp $file_vvp
+rm /$SIMULATING_FOLDER/$file_vvp
 
 ###############################################################################
 #                       Check if vcd file exist                               #
