@@ -1,0 +1,1 @@
+alu_tb1.v	:	test some aritmetic and logic operations (ADD, SUB, OR, SLT)
