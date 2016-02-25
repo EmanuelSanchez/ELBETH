@@ -27,34 +27,44 @@ module memory_tb;
 		begin
 			$dumpfile("memory_tb.vcd");
 			$dumpvars(0,memory_tb);
-			$monitor("In_addr_a = %h   out_a = %h   In_addr_b = %h   out_b = %h", amem_addr, amem_data_out, bmem_addr, bmem_data_out);
 
-			//test vector: read amem
-			#40
-			amem_addr = 8'd0;              
-			amem_wr= 4'd0;
-			amem_enable = 1'b1;
-
-			//test vector: bmem 0001 = 1 byte
+			//test vector: bmem write a 1 byte
 			#50
-			bmem_addr = 8'd9;
-			bmem_data_in = 32'd8;
-			bmem_wr = 4'd1;
+			bmem_addr = 8'd0;
+			bmem_data_in = 32'hFF;
+			bmem_wr = 4'b0001;
 			bmem_enable = 1'b1;
 
-			//test vector: bmem 0010 = 1 halfword
+			//test vector: bmem write a halfword
+			#50
+			bmem_addr = 8'd1;
+			bmem_data_in = 32'hFFFF;
+			bmem_wr = 4'b0011;
+			bmem_enable = 1'b1;
+
+			//test vector: bmem write a word
 			#50
 			bmem_addr = 8'd2;
-			bmem_data_in = 32'd20;
-			bmem_wr = 4'd1;
+			bmem_data_in = 32'hFFFFFFFF;
+			bmem_wr = 4'b1111;
 			bmem_enable = 1'b1;
 
-			//test vector: bmem 1000 = 1 word
+			//test vector: read amem
 			#50
-			bmem_addr = 8'd3;
-			bmem_data_in = 32'd256;
-			bmem_wr = 4'd1;
-			bmem_enable = 1'b1;
+			amem_addr = 8'd0;        
+			amem_wr= 4'd0;
+			amem_enable = 1'b1;
+			bmem_enable = 1'b0;
+
+			//test vector: read amem
+			#50
+			amem_addr = 8'd1;            
+			amem_enable = 1'b1;
+
+			//test vector: read amem
+			#50
+			amem_addr = 8'd2;
+			amem_enable = 1'b1;
 
 			//finish
 			#50 
