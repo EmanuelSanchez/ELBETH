@@ -1,23 +1,17 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    17:23:53 02/09/2016 
-// Design Name: 
-// Module Name:    elbeth_decorder 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//==================================================================================================
+//  Filename      : elbeth_decoder.v
+//  Created On    : Mon Jan  31 09:46:00 2016
+//  Last Modified : 2016-02-25 22:44:28
+//  Revision      : 0.1
+//  Author        : Emanuel Sánchez & Ninisbeth Segovia
+//  Company       : Universidad Simón Bolívar
+//  Email         : emanuelsab@gmail.com & ninisbeth_segovia@hotmail.com
 //
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+//  Description   : module to decodification of instructions
+//==================================================================================================
+////////////////////////////////////////////////////////////////////////////////////////////////////
 `include "elbeth_definitions.v"
 
 module elbeth_decoder(
@@ -149,6 +143,6 @@ module elbeth_decoder(
 						id_op_alu <= `OP_ADD;
 						id_op_branch <= `OP_JAL;
 				end
-		endcase
-	end
-endmodule
+		endcase // opcode
+	end // always @(*)
+endmodule // elbeth_decoder

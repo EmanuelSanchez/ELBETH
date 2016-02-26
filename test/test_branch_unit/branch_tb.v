@@ -16,7 +16,7 @@ module branch_tb;
     reg [2:0] 			operation;
     reg [31:0]			id_data_rs1;
     reg [31:0] 			id_data_rs2;
-	wire [31:0] 		pc_brancn;
+	wire [31:0] 		pc_branch;
 	wire 				branch_taken;
 
 	// test process
@@ -79,3 +79,13 @@ module branch_tb;
 		id_data_rs2 = ;
 
 	end
+
+	elbeth_branch_unit b1 (offset,
+						  id_pc,
+						  operation,
+						  id_data_rs1,
+						  id_data_rs2,
+						  pc_branch,
+						  branch_taken);
+
+endmodule // branch_tb

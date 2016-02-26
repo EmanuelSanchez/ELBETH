@@ -1,3 +1,13 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//==================================================================================================
+//  Filename      : elbeth_control_unit.v
+//  Last Modified : 2016-02-25 21:44:58
+//  Author        : Emanuel Sánchez & Ninisbeth Segovia
+//  Company       : Universidad Simón Bolívar
+//  Email         : emanuelsab@gmail.com & ninisbeth_segovia@hotmail.com
+//  Description   : test the elbeth_control_unit: stall for memory read/write
+//==================================================================================================
+////////////////////////////////////////////////////////////////////////////////////////////////////
 module control_tb1;
 	// inputs and outputs
 

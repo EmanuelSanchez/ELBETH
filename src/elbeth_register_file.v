@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : register_file.v
 //  Created On    : Tue Jan  19 06:40:00 2016
-//  Last Modified : 2016-02-22 09:07:42
+//  Last Modified : 2016-02-25 15:05:29
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth 
 //  Company       : Universidad Simón Bolívar
@@ -29,12 +29,12 @@ module elbeth_register_file(
 //--------------------------------------------------------------------------
 // Write in Register: it happens on falling edge
 //--------------------------------------------------------------------------
-	always @( negedge clk ) begin
+	always @( posedge clk ) begin
 		if( rd_addr != 5'b0 )
 			if ( ctrl_w_enable )
-				gp_register[rd_addr] <= rd_data;
+				gp_register[rd_addr] = rd_data;
 			else
-				gp_register[rd_addr] <= gp_register[rd_addr];
+				gp_register[rd_addr] = gp_register[rd_addr];
 	end
 	
 //--------------------------------------------------------------------------
