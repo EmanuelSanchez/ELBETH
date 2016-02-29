@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //==================================================================================================
 //  Filename      : elbeth_control_unit.v
-//  Last Modified : 2016-02-25 21:44:58
+//  Last Modified : 2016-02-29 10:24:17
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
 //  Email         : emanuelsab@gmail.com & ninisbeth_segovia@hotmail.com
@@ -129,17 +129,25 @@ module control_tb1;
 							if_funct3,
 							if_imem_ready,
 							if_imem_en,
+							id_match_forward_rs1,
+							id_match_forward_rs2,
+							id_branch_taken,
 							exs_dmem_ready,
 							exs_dmem_en,
+							exs_exception,
+							if_stall,
+							id_stall,
+							if_flush,
+							id_flush,
 							id_pc_select,
+							id_select_rs1,
+							id_select_rs2,
 							id_alu_port_a_select,
 							id_alu_port_b_select,
 							id_data_w_reg_select,
 							id_reg_w,
 							id_mem_en,
-							id_data_size_mem,
-							id_data_sign_mem,
-							if_stall,
-							id_stall);
+							id_mem_rw,
+							id_data_sign_mem);
 
 endmodule // control_tb
