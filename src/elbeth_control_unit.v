@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_control_unit.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-25 22:48:09
+//  Last Modified : 2016-02-29 10:41:59
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -22,7 +22,7 @@ module elbeth_control_unit(
 	input							if_imem_en,				// .
 	input							id_match_forward_rs1,	// Hazar unit signals
 	input							id_match_forward_rs2,	// .
-	input							id_branchr_taken,		// Branch unit signals
+	input							id_branch_taken,		// Branch unit signals
 	input							exs_dmem_ready,			// Data memory signals
 	input							exs_dmem_en,			// .
 	input							exs_exception,			// Exception signal (exception always come from execute)
@@ -38,20 +38,22 @@ module elbeth_control_unit(
 	output							id_data_w_reg_select,	// .
 	output							id_reg_w,				// .
 	output 							id_mem_en,				// .
-	output	[3:0]					id_data_size_mem,		// .
+	output	[3:0]					id_mem_rw,				// .
 	output							id_data_sign_mem		// .
     );
 	
 	wire 				imem_request_stall;
 	wire 				dmem_request_stall;
+	wire 				id_data_size_mem;
 
 	reg		[15:0]		 datapath;
 
+	assign  id_data_size_mem = id_mem_rw;
 	assign	imem_request_stall = if_imem_en & ~if_imem_ready;		// Need stall if the memory is enabled and the ready signal is dowm
 	assign	dmem_request_stall = exs_dmem_en & ~exs_dmem_ready;		// .		
 	assign	if_stall = imem_request_stall | dmem_request_stall;		// Pipeline stall (instruction fetch)
 	assign  id_stall = dmem_request_stall;							// .    		  (instruction decode)
-	assign 	if_flush = id_branchr_taken | exs_exception;
+	assign 	if_flush = id_branch_taken | exs_exception;
 	assign  id_flush = exs_exception;
 //----------------------------------------------------------------------------------------------------------------------------------
 // 					Datapath: it generates control signals
@@ -91,39 +93,41 @@ module elbeth_control_unit(
 // set the control signals (control vectors)
 //--------------------------------------------------------------------------
 
-	assign	datapath[13]; =   (rst) ? 1'b0 : (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs1
-	assign	datapath[12]; =   (rst) ? 1'b0 : (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs2
-	assign  datapath[15:14] = (rst) ? 2'b0 : (exs_exception) ? 2'd2 : (id_branchr_taken) ? 2'd1 : 2'd0; // Selecting exception pc
+	always @(*) begin
+		datapath[15:14] = (exs_exception) ? 2'd2 : (id_branch_taken) ? 2'd1 : 2'd0; // Selecting exception pc
+		datapath[13] = (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs1
+		datapath[12] = (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs2
+	end
 
 	always @(*) begin
 		case (if_opcode)
-				`OP_TYPE_R :	begin datapath = (rst) ? `R_CTRL_VECTOR; end
-				`OP_TYPE_I :	begin datapath = (rst) ? `I_CTRL_VECTOR; end
+				`OP_TYPE_R :	begin datapath[11:0] = `R_CTRL_VECTOR; end
+				`OP_TYPE_I :	begin datapath[11:0] = `I_CTRL_VECTOR; end
 				`OP_TYPE_I_LOADS : begin
 						case	(if_funct3)
-								3'd0 : 	  begin datapath = (rst) ? `I_LOADS_B_CTRL_VECTOR;	end
-								3'd1 :    begin datapath = (rst) ? `I_LOADS_H_CTRL_VECTOR;	end
-								3'd2 :	  begin datapath = (rst) ? `I_LOADS_W_CTRL_VECTOR;	end
-								3'd4 :	  begin datapath = (rst) ? `I_LOADS_UB_CTRL_VECTOR;	end
-								3'd5 :	  begin datapath = (rst) ? `I_LOADS_UH_CTRL_VECTOR; end
-								default : begin datapath = (rst) ? 15'bx; end
+								3'd0 : 	  begin datapath[11:0] = `I_LOADS_B_CTRL_VECTOR;	end
+								3'd1 :    begin datapath[11:0] = `I_LOADS_H_CTRL_VECTOR;	end
+								3'd2 :	  begin datapath[11:0] = `I_LOADS_W_CTRL_VECTOR;	end
+								3'd4 :	  begin datapath[11:0] = `I_LOADS_UB_CTRL_VECTOR;	end
+								3'd5 :	  begin datapath[11:0] = `I_LOADS_UH_CTRL_VECTOR; end
+								default : begin datapath[11:0] = 12'bx; end
 						endcase
 				end
-				`OP_TYPE_I_JALR : begin datapath = `I_JALR_CTRL_VECTOR; end
+				`OP_TYPE_I_JALR :	begin datapath[11:0] = `I_JALR_CTRL_VECTOR; end
 				`OP_TYPE_S : begin
 						case	(if_funct3)
-								3'd0 :	  begin datapath = `S_B_CTRL_VECTOR; end
-								3'd1 :	  begin datapath = `S_H_CTRL_VECTOR; end
-								3'd2 :	  begin datapath = `S_W_CTRL_VECTOR	; end
-								default : begin datapath = 15'bx; end
+								3'd0 :	  begin datapath[11:0] = `S_B_CTRL_VECTOR; end
+								3'd1 :	  begin datapath[11:0] = `S_H_CTRL_VECTOR; end
+								3'd2 :	  begin datapath[11:0] = `S_W_CTRL_VECTOR	; end
+								default : begin datapath[11:0] = 12'bx; end
 						endcase
 				end
-				`OP_TYPE_SB :      begin datapath = `SB_CTRL_VECTOR; end
-				`OP_TYPE_U_LUI :   begin datapath = `U_LUI_CTRL_VECTOR; end
-				`OP_TYPE_U_AUIPC : begin datapath = `U_AUIPC_CTRL_VECTOR; end
-				`OP_TYPE_UJ_JAL :  begin datapath = `UJ_JAL_CTRL_VECTOR; end
-				default : 		   begin datapath = 15'b0; end
-		endcase
-	end
+				`OP_TYPE_SB :      begin datapath[11:0] = `SB_CTRL_VECTOR; end
+				`OP_TYPE_U_LUI :   begin datapath[11:0] = `U_LUI_CTRL_VECTOR; end
+				`OP_TYPE_U_AUIPC : begin datapath[11:0] = `U_AUIPC_CTRL_VECTOR; end
+				`OP_TYPE_UJ_JAL :  begin datapath[11:0] = `UJ_JAL_CTRL_VECTOR; end
+				default : 		   begin datapath[11:0] = 12'b0; end
+		endcase // if_funct3
+	end // always @(*)
 
-endmodule
+endmodule // elbeth_control_unit

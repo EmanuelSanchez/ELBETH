@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-02-25 20:36:06
+//  Last Modified : 2016-02-29 10:33:04
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -55,21 +55,21 @@
 //		0	:	id_data_sign_mem		 		Unsigned/Signed data memory
 //---------------------------------------------------------------------------------------------------------------------------------
 
-`define R_CTRL_VECTOR				16'bxxxx0000010xxxxx
-`define I_CTRL_VECTOR				16'bxxxx0001010xxxxx
-`define I_LOADS_B_CTRL_VECTOR		16'bxxxx000111100001
-`define I_LOADS_H_CTRL_VECTOR		16'bxxxx000111100001
-`define I_LOADS_W_CTRL_VECTOR		16'bxxxx000111100001
-`define I_LOADS_UB_CTRL_VECTOR		16'bxxxx000111100000
-`define I_LOADS_UH_CTRL_VECTOR		16'bxxxx000111100000
-`define I_JALR_CTRL_VECTOR			16'bxxxx0101010xxxxx
-`define S_W_CTRL_VECTOR				16'bxxxx0001x011000x
-`define S_H_CTRL_VECTOR				16'bxxxx0001x010010x
-`define S_B_CTRL_VECTOR				16'bxxxx0001x010001x
-`define SB_CTRL_VECTOR				16'bxxxxxxxxx00xxxxx
-`define U_LUI_CTRL_VECTOR			16'bxxxx001010xxxxxx
-`define U_AUIPC_CTRL_VECTOR			16'bxxxx101010xxxxxx
-`define UJ_JAL_CTRL_VECTOR			16'bxxxx101010xxxxxx
+`define R_CTRL_VECTOR				12'b0000010xxxxx
+`define I_CTRL_VECTOR				12'b0001010xxxxx
+`define I_LOADS_B_CTRL_VECTOR		12'b000111100001
+`define I_LOADS_H_CTRL_VECTOR		12'b000111100001
+`define I_LOADS_W_CTRL_VECTOR		12'b000111100001
+`define I_LOADS_UB_CTRL_VECTOR		12'b000111100000
+`define I_LOADS_UH_CTRL_VECTOR		12'b000111100000
+`define I_JALR_CTRL_VECTOR			12'b0101010xxxxx
+`define S_W_CTRL_VECTOR				12'b0001x011000x
+`define S_H_CTRL_VECTOR				12'b0001x010010x
+`define S_B_CTRL_VECTOR				12'b0001x010001x
+`define SB_CTRL_VECTOR				12'bxxxxx00xxxxx
+`define U_LUI_CTRL_VECTOR			12'b001010xxxxxx
+`define U_AUIPC_CTRL_VECTOR			12'b101010xxxxxx
+`define UJ_JAL_CTRL_VECTOR			12'b101010xxxxxx
 
 //--------------------------------------------------------------------------
 // ALU operations
