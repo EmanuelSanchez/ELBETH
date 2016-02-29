@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_control_unit.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-29 10:41:59
+//  Last Modified : 2016-02-29 11:21:41
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -15,7 +15,6 @@
 `include "elbeth_definitions.v"
 
 module elbeth_control_unit(
-	input							rst,					// Global reset
     input 	[6:0] 					if_opcode,				// instruction segmentation
 	input	[3:0]					if_funct3,				// .
 	input							if_imem_ready,			// Instruction memory signals

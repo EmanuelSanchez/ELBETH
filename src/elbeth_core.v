@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-24 20:47:05
+//  Last Modified : 2016-02-29 09:52:45
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -22,7 +22,8 @@ module core(
 	input 				 imem_error,
 	output [31:0]		 imem_addr,			//addra  = pc
 	output 				 imem_en,
-	output [3:0]		 imem_wr,
+	output 				 imem_wr,
+	output [3:0]		 imem_out_data,
 
 	//Data memory
 	input  [31:0]		 dmem_in_data,		//doutb = data
@@ -30,8 +31,8 @@ module core(
 	input 				 dmem_error,
 	output [31:0]		 dmem_addr,			//addrb = alu_result
 	output [31:0]		 dmem_en,
-	output [3:0]		 dmem_data_size,
-	output [31:0]		 dmem_w_data		
+	output [3:0]		 dmem_wr,
+	output [31:0]		 dmem_out_data		
     );
 	 
 	 //Wires to instruction memory
@@ -53,15 +54,18 @@ module core(
 	 wire 					if_id_reg_stall;
 	 wire 					id_exs_reg_stall;
 	 
+	//Instruction memory asignaments
 	 assign	imem_in_data = if_instruction;
 	 assign	imem_addr    = pc;
-	 
+	 assign imem_en = 1'b1;
+	 assign imem_wr = 4'b0;
+	 assign imem_out_data = 32'bx;
+	//Data memory asignaments
 	 assign	dmem_in_data 	= data_memory_out;
 	 assign	dmem_addr 		= alu_result;
-	 assign	dmem_enb 		= exs_ctrl_mem_en;
-	 assign	dmem_data_size	= size_data_memory;
-	 assign	dmem_w_data		= exs_rs2_data;
-
+	 assign	dmem_en 		= exs_ctrl_mem_en;
+	 assign	dmem_wr			= size_data_memory;
+	 assign	dmem_out_data	= exs_rs2_data;
 	//Instruction segmentation
 	 assign opcode = id_instruction[6:0];
 	 assign inst_0 = id_instruction[11:7];
@@ -69,13 +73,10 @@ module core(
 	 assign inst_2 = id_instruction[19:15];
 	 assign inst_3 = id_instruction[24:20];
 	 assign inst_4 = id_instruction[31:25];
-
 	 //PC register stall
 	 assign pc_reg_stall = if_stall | id_stall;
 
-	 //Instruction memory asignaments
-	 assign imem_en = 1'b1;
-	 assign imem_wr = 4'b0;
+
 	 
 //--------------------------------------------------------------------------
 // IF stage
@@ -83,7 +84,7 @@ module core(
 
 	elbeth_add4 pc_adder_4 (
 		//Inputs
-		 .in(pc), 
+		 .in(pc),
 		//Outputs
 		 .out(pc_add4)
 		 );
@@ -103,7 +104,7 @@ module core(
 		 //Inputs
 		 .clk(clk), 
 		 .rst(rst),
-		 .next_pc(next_pc), 
+		 .next_pc(next_pc),
 		 //In Control Signals
 		 .ctrl_stall(pc_reg_stall),
 		 //Outputs
@@ -118,6 +119,7 @@ module core(
 		 .if_pc(pc), 
 		 //In Control Signals
 		 .ctrl_stall(if_id_reg_stall), 
+		 .ctrl_flush(if_flush),
 		 //Outputs
 		 .id_instruction(id_instruction),
 		 .id_pc(id_pc)
@@ -167,7 +169,8 @@ module core(
 		 .id_data_rs1(id_rs1_data), 
 		 .id_data_rs2(id_rs2_data), 
 		 //Ouputs
-		 .pc_branch(pc_branch)
+		 .pc_branch(pc_branch),
+		 .branch_taken(branch_taken)
 		 );
 
 	elbeth_id_exs_register id_exs_register	(
@@ -175,20 +178,20 @@ module core(
 		 .clk(clk), 
 		 .rst(rst), 
 		 .ctrl_stall(ctrl_stall), 
+		 .ctrl_flush(id_flush),
 		 .id_pc(id_pc), 
 		 .id_alu_operation(id_op_alu), 
 		 .id_rs1_data(id_rs1_data), 
 		 .id_rs2_data(id_rs2_data), 
 		 .id_rd_addr(id_rd_addr), 
-		 .id_imm_shamt(id_imm_shamt), 
+		 .id_imm_shamt(id_imm_shamt),
 		 //In Control Signals
-		 .id_ctrl_stall(id_exs_reg_stall), 
 		 .id_ctrl_alu_port_a_select(id_alu_port_a_select), 
 		 .id_ctrl_alu_port_b_select(id_alu_port_b_select),  
 		 .id_ctrl_data_w_reg_select(id_data_w_reg_select), 
-		 .id_ctrl_reg_w(id_reg_w), 
+		 .id_ctrl_reg_w(id_reg_w),
 		 .id_ctrl_mem_en(id_mem_en), 
-		 .id_data_size_mem(id_data_size_mem), 
+		 .id_ctrl_mem_rw(id_ctrl_mem_rw), 
 		 .id_data_sign_mem(id_data_sign_mem),
 		 //Outpus
 		 .exs_pc(exs_pc), 
@@ -198,13 +201,12 @@ module core(
 		 .exs_rd_addr(exs_rd_addr), 
 		 .exs_imm_shamt(exs_imm_shamt),
 		 //Out Control Signals
-		 .exs_ctrl_stall(exs_ctrl_stall), 
 		 .exs_ctrl_alu_port_a_select(exs_ctrl_alu_port_a_select), 
 		 .exs_ctrl_alu_port_b_select(exs_ctrl_alu_port_b_select),  
 		 .exs_ctrl_data_w_reg_select(exs_ctrl_data_w_reg_select),
 		 .exs_ctrl_reg_w(exs_ctrl_reg_w), 
 		 .exs_ctrl_mem_en(exs_ctrl_mem_en), 
-		 .exs_data_size_mem(size_data_memory), 
+		 .exs_ctrl_mem_rw(exs_ctrl_mem_rw), 
 		 .exs_data_sign_mem(exs_data_sign_mem)
 		 );
 		 
@@ -214,9 +216,8 @@ module core(
 
 	elbeth_mux_3_to_1 alu_port_a_select (
 		 //Inputs
-		 .mux_in_1(exs_rs1_data), 
+		 .mux_in_1(exs_rs1_data),
 		 .mux_in_2(exs_pc), 
-		 .mux_in_3(mux_in_3), 										//Por incluir Forwarding
 		 //In Control Signals
 		 .bit_select(exs_ctrl_alu_port_a_select), 
 		 //Outputs
@@ -227,7 +228,6 @@ module core(
 		 //Inputs
 		 .mux_in_1(exs_rs2_data), 
 		 .mux_in_2(exs_imm_shamt), 
-		 .mux_in_3(mux_in_3), 									//Por incluir Forwarding
 		 //In Control Signals
 		 .bit_select(exs_ctrl_alu_port_b_select),
 		 //Outputs
@@ -273,15 +273,20 @@ module core(
 		 .if_funct3(inst_1),
 		 //In Control Signals
 		 .exs_mem_ready(exs_mem_ready),
+		 .id_branch_taken(branch_taken),
 		 //Out Control Signals
+		 .if_stall(if_stall),
+		 .if_flush(if_flush),
 		 .if_pc_select(if_pc_select), 
+		 .id_stall(id_stall),
+		 .id_flush(id_flush),
 		 .id_registers_stall(id_registers_stall), 		//Incluir senal de la Inst Memory
 		 .id_alu_port_a_select(id_alu_port_a_select), 
 		 .id_alu_port_b_select(id_alu_port_b_select), 
 		 .id_data_w_reg_select(id_data_w_reg_select), 
 		 .id_reg_w(id_reg_w),
 		 .id_mem_en(id_mem_en), 
-		 .id_data_size_mem(id_data_size_mem), 
+		 .id_mem_rw(id_mem_rw), 
 		 .id_data_sign_mem(id_data_sign_mem),
 		 .pipeline_stall(pipeline_stall)
 		 );

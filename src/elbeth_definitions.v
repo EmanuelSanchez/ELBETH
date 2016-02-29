@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-02-29 10:33:04
+//  Last Modified : 2016-02-29 11:00:48
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -106,8 +106,8 @@
 //--------------------------------------------------------------------------
 
 `define BYTE				4'b0001
-`define HALFWORD			4'b0010
-`define WORD				4'b1000
+`define HALFWORD			4'b0011
+`define WORD				4'b1111
 
 //--------------------------------------------------------------------------
 // Hazard unit
