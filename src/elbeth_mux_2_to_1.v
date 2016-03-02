@@ -18,7 +18,7 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module mux_2_to_1(
+module elbeth_mux_2_to_1(
 	input [31:0]		mux_in_1,
 	input [31:0]		mux_in_2,
 	input 				bit_select,
@@ -27,4 +27,4 @@ module mux_2_to_1(
 
 	assign mux_out = (bit_select) ? mux_in_1 : mux_in_2; 
 	 
-endmodule
+endmodule // elbeth_mux_2_to_1

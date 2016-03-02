@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_control_unit.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-29 11:21:41
+//  Last Modified : 2016-03-01 23:32:37
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -15,8 +15,9 @@
 `include "elbeth_definitions.v"
 
 module elbeth_control_unit(
+	input							rst,
     input 	[6:0] 					if_opcode,				// instruction segmentation
-	input	[3:0]					if_funct3,				// .
+	input	[2:0]					if_funct3,				// .
 	input							if_imem_ready,			// Instruction memory signals
 	input							if_imem_en,				// .
 	input							id_match_forward_rs1,	// Hazar unit signals
@@ -30,8 +31,8 @@ module elbeth_control_unit(
 	output 							if_flush,
 	output 							id_flush,
 	output 	[1:0]					if_pc_select, 			// Datapath signals
-	output							id_select_rs1,			// .
-	output							id_select_rs2,			// .
+	output							id_rs1_select,			// .
+	output							id_rs2_select,			// .
 	output	[1:0]					id_alu_port_a_select,	// .
 	output	[1:0]					id_alu_port_b_select,	// .
 	output							id_data_w_reg_select,	// .
@@ -61,8 +62,8 @@ module elbeth_control_unit(
 //----------------------------------------------------------------------------------------------------------------------------------
 //		15	:	if_pc_select					Select: (0) pc + 4, (1)	branch, (2) exception
 //		14	:	.								
-//		13	: 	id_select_rs1					Select: (0) rs1, (1) forwarding
-//		12	:	id_select_rs2					Select: (0) rs2, (1) forwarding
+//		13	: 	id_rs1_select					Select: (0) rs1, (1) forwarding
+//		12	:	id_rs2_select					Select: (0) rs2, (1) forwarding
 //		11	:	id_alu_port_a_select			Select: (0) rs1, (1) pc, (2) forwarding
 //		10  :	.
 //		9	:	id_alu_port_b_select			Select: (0) rs2, (1) inmediate, (2) forwarding
@@ -78,8 +79,8 @@ module elbeth_control_unit(
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	assign	if_pc_select 		 = datapath[15:14];
-	assign	id_select_rs1 		 = datapath[13];
-	assign	id_select_rs2 		 = datapath[12];
+	assign	id_rs1_select 		 = datapath[13];
+	assign	id_rs2_select 		 = datapath[12];
 	assign	id_alu_port_a_select = datapath[11:10];
 	assign	id_alu_port_b_select = datapath[9:8];
 	assign	id_data_w_reg_select = datapath[7];
@@ -93,9 +94,9 @@ module elbeth_control_unit(
 //--------------------------------------------------------------------------
 
 	always @(*) begin
-		datapath[15:14] = (exs_exception) ? 2'd2 : (id_branch_taken) ? 2'd1 : 2'd0; // Selecting exception pc
-		datapath[13] = (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs1
-		datapath[12] = (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs2
+		datapath[15:14] = (rst) ? 2'd0 : (exs_exception) ? 2'd2 : (id_branch_taken) ? 2'd1 : 2'b0; // Selecting exception pc
+		datapath[13] = (rst) ? 1'd0 : (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs1
+		datapath[12] = (rst) ? 1'd0 : (id_match_forward_rs2) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs2
 	end
 
 	always @(*) begin
@@ -125,7 +126,7 @@ module elbeth_control_unit(
 				`OP_TYPE_U_LUI :   begin datapath[11:0] = `U_LUI_CTRL_VECTOR; end
 				`OP_TYPE_U_AUIPC : begin datapath[11:0] = `U_AUIPC_CTRL_VECTOR; end
 				`OP_TYPE_UJ_JAL :  begin datapath[11:0] = `UJ_JAL_CTRL_VECTOR; end
-				default : 		   begin datapath[11:0] = 12'b0; end
+				default : 		   begin datapath = 16'b0; end
 		endcase // if_funct3
 	end // always @(*)
 

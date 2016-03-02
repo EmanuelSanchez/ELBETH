@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_decoder.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-25 22:44:28
+//  Last Modified : 2016-03-01 19:51:21
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -22,7 +22,7 @@ module elbeth_decoder(
 	input 	[4:0]				inst_3,
 	input 	[6:0]				inst_4,
     output reg [31:0]			id_offset_branch,
-	output reg	[3:0]			id_op_branch,
+	output reg	[2:0]			id_op_branch,
     output reg [4:0] 			id_rs1_addr,
     output reg [4:0] 			id_rs2_addr,
 	output reg [4:0] 			id_rd_addr,

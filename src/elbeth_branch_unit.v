@@ -30,11 +30,11 @@ module elbeth_branch_unit(
 	output reg 				branch_taken
     );
 	
-	wire	iqual;
-	wire	greater;
+	wire	equal;
+	wire	less;
 	wire	less_unsign;
 
-	assign iqual   = id_data_rs1 == id_data_rs2;
+	assign equal   = id_data_rs1 == id_data_rs2;
 	assign less    = $signed(id_data_rs1) < $signed(id_data_rs2);
 	assign less_unsign = id_data_rs1 < id_data_rs2;
 
@@ -50,11 +50,11 @@ module elbeth_branch_unit(
 				end
 				`OP_BEQ  :	begin 
 						pc_branch = id_pc + $signed(offset);
-						branch_taken = iqual;
+						branch_taken = equal;
 				end
 				`OP_BNE  :  begin 
 						pc_branch = id_pc + $signed(offset);
-						branch_taken = ~iqual;
+						branch_taken = ~equal;
 				end
 				`OP_BLT  :  begin 
 						pc_branch = id_pc + $signed(offset);
@@ -66,11 +66,15 @@ module elbeth_branch_unit(
 				end
 				`OP_BGE  :  begin 
 						pc_branch = id_pc + $signed(offset);
-						branch_taken = (~less) | equal;
+						branch_taken = (~less | equal);
 				end
 				`OP_BGEU :  begin 
 						pc_branch = id_pc + $signed(offset);
-						branch_taken = (~less_unsign) | equal;
+						branch_taken = (~less_unsign | equal);
+				end
+				default: 	begin
+						pc_branch =	32'bx;
+						branch_taken = 1'b0;
 				end
 		endcase
 	end

@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : add4.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-17 08:28:17
+//  Last Modified : 2016-03-01 20:02:26
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -13,10 +13,10 @@
 //==================================================================================================
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 module elbeth_add4(
-    input [0:31] in,
-    output [0:31] out
+    input [31:0] 	in,
+    output [31:0] 	out
     );
 	
-	assign out = in + 4;
+	assign out = in + 32'd4;
 
 endmodule //elbeth_add4

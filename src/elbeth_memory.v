@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : memory.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-02-25 15:13:23
+//  Last Modified : 2016-03-01 22:19:41
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -25,14 +25,14 @@ module elbeth_memory #(
 	input					amem_enable,
 	input		[AW-1:0]	amem_addr,
 	input		[31:0]		amem_data_in,
-	input 		[3:0]		amem_wr,
+	input 		[3:0]		amem_rw,
 	output	reg [31:0]		amem_data_out,
 	output	reg				amem_ready,
 	//Port B	
 	input					bmem_enable,
 	input		[AW-1:0]	bmem_addr,
 	input		[31:0]		bmem_data_in,
-	input 		[3:0]		bmem_wr,
+	input 		[3:0]		bmem_rw,
 	output	reg [31:0]		bmem_data_out,
 	output	reg				bmem_ready
     );
@@ -51,6 +51,10 @@ module elbeth_memory #(
 
     begin
         $readmemh("memory_hex.txt", memory_array);
+    end
+
+    always @(*) begin
+        $writememh("memory_hex.txt", memory_array);
     end
 
     //--------------------------------------------------------------------------
@@ -72,11 +76,11 @@ module elbeth_memory #(
 
     always @(posedge clk) begin
         amem_d_out <= memory_array[amem_addr];
-        if(amem_wr != 4'b0) begin
-            memory_array[amem_addr][7:0]   = (amem_wr[0] & amem_enable) ? amem_data_in[7:0]   : memory_array[amem_addr][7:0];
-            memory_array[amem_addr][15:8]  = (amem_wr[1] & amem_enable) ? amem_data_in[15:8]  : memory_array[amem_addr][15:8];
-            memory_array[amem_addr][23:16] = (amem_wr[2] & amem_enable) ? amem_data_in[23:16] : memory_array[amem_addr][23:16];
-            memory_array[amem_addr][31:24] = (amem_wr[3] & amem_enable) ? amem_data_in[31:24] : memory_array[amem_addr][31:24];
+        if(amem_rw != 4'b0) begin
+            memory_array[amem_addr][7:0]   = (amem_rw[0] & amem_enable) ? amem_data_in[7:0]   : memory_array[amem_addr][7:0];
+            memory_array[amem_addr][15:8]  = (amem_rw[1] & amem_enable) ? amem_data_in[15:8]  : memory_array[amem_addr][15:8];
+            memory_array[amem_addr][23:16] = (amem_rw[2] & amem_enable) ? amem_data_in[23:16] : memory_array[amem_addr][23:16];
+            memory_array[amem_addr][31:24] = (amem_rw[3] & amem_enable) ? amem_data_in[31:24] : memory_array[amem_addr][31:24];
         end
     end
 
@@ -86,11 +90,11 @@ module elbeth_memory #(
 
     always @(posedge clk) begin
         bmem_d_out <= memory_array[bmem_addr];
-        if(bmem_wr != 4'b0) begin
-            memory_array[bmem_addr][7:0]   = (bmem_wr[0] & bmem_enable) ? bmem_data_in[7:0]   : memory_array[bmem_addr][7:0];
-            memory_array[bmem_addr][15:8]  = (bmem_wr[1] & bmem_enable) ? bmem_data_in[15:8]  : memory_array[bmem_addr][15:8];
-            memory_array[bmem_addr][23:16] = (bmem_wr[2] & bmem_enable) ? bmem_data_in[23:16] : memory_array[bmem_addr][23:16];
-            memory_array[bmem_addr][31:24] = (bmem_wr[3] & bmem_enable) ? bmem_data_in[31:24] : memory_array[bmem_addr][31:24];
+        if(bmem_rw != 4'b0) begin
+            memory_array[bmem_addr][7:0]   = (bmem_rw[0] & bmem_enable) ? bmem_data_in[7:0]   : memory_array[bmem_addr][7:0];
+            memory_array[bmem_addr][15:8]  = (bmem_rw[1] & bmem_enable) ? bmem_data_in[15:8]  : memory_array[bmem_addr][15:8];
+            memory_array[bmem_addr][23:16] = (bmem_rw[2] & bmem_enable) ? bmem_data_in[23:16] : memory_array[bmem_addr][23:16];
+            memory_array[bmem_addr][31:24] = (bmem_rw[3] & bmem_enable) ? bmem_data_in[31:24] : memory_array[bmem_addr][31:24];
         end
     end
 
