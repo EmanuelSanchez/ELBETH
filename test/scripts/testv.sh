@@ -23,7 +23,7 @@
 ###############################################################################
 #                            Parameter Check                                  #
 ###############################################################################
-EXPECTED_ARGS=3
+EXPECTED_ARGS=2
 if [ $# -ne $EXPECTED_ARGS ]; then
     echo
     echo -e "ERROR\t: wrong number of arguments"
@@ -38,7 +38,7 @@ fi
 SCRIPT_FOLDER="$(pwd)"
 cd ../
 TESTS_FOLDER="$(pwd)"
-SIMULATING_FOLDER=$TESTS_FOLDER/$3
+SIMULATING_FOLDER=$TESTS_FOLDER/$2
 cd ../
 ROOT_FOLDER="$(pwd)"
 SOURCES_FOLDER=$ROOT_FOLDER/src
@@ -47,21 +47,13 @@ SOURCES_FOLDER=$ROOT_FOLDER/src
 #                       Set Files and extentions                              #
 ###############################################################################
 
-file_verilog=$SOURCES_FOLDER/$1.v
-file_verilog_tb=$SIMULATING_FOLDER/$2.v
-file_vvp=$2.vvp
-file_vcd=$2.vcd
+file_verilog_tb=$SIMULATING_FOLDER/$1.v
+file_vvp=$1.vvp
+file_vcd=$1.vcd
 
 ###############################################################################
 #                       Check if filelist exist                               #
 ###############################################################################
-
-if [ ! -e $file_verilog ]; then
-    echo
-    echo -e "ERROR:\t Verilog module file doesn't exist:  $file_verilog"
-    echo
-    exit 1
-fi
 
 if [ ! -e $file_verilog_tb ]; then
     echo
@@ -81,12 +73,10 @@ fi
 #                       Compile verilog module                                #
 ###############################################################################
 
-cp $file_verilog $SIMULATING_FOLDER/$1.v
-cp $SOURCES_FOLDER/elbeth_definitions.v $SIMULATING_FOLDER/elbeth_definitions.v 
-cd $SIMULATING_FOLDER
-iverilog -o $file_vvp $file_verilog_tb $file_verilog
-rm $SIMULATING_FOLDER/$1.v
-rm $SIMULATING_FOLDER/elbeth_definitions.v 
+cp $SIMULATING_FOLDER/$1.v $SOURCES_FOLDER/$1.v
+cd $SOURCES_FOLDER
+iverilog -o $file_vvp $file_verilog_tb
+rm $SOURCES_FOLDER/$1.v 
 
 ###############################################################################
 #                       Check if module was compiled                          #
@@ -104,7 +94,7 @@ fi
 ###############################################################################
 
 vvp $file_vvp
-rm /$SIMULATING_FOLDER/$file_vvp
+rm $SOURCES_FOLDER/$file_vvp
 
 ###############################################################################
 #                       Check if vcd file exist                               #
@@ -122,3 +112,4 @@ fi
 ###############################################################################
 
 gtkwave $file_vcd
+mv $SOURCES_FOLDER/$1.vcd $SIMULATING_FOLDER/$1.vcd
