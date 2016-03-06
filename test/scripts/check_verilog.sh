@@ -60,12 +60,14 @@ fi
 
 cd $FILE_FOLDER
 
-if !(iverilog $file_check -W all) then
+if !(iverilog -o check_out $file_check -W all) then
     echo
     echo -e "ERROR:\tCheck error."
     echo
     exit 1
 fi
+
+rm check_out
 
 echo -e "--------------------------------------------------------------------------"
 echo -e "INFO:\tCheck syntax: OK."

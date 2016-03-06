@@ -84,7 +84,7 @@ iverilog -o $file_vvp $file_verilog_tb
 
 if [ ! -e $file_vvp ]; then
     echo
-    echo -e "ERROR:\t The files file was not compled:  $file_vvp"
+    echo -e "ERROR:\t The files file was not compiled:  $file_vvp"
     echo
     exit 1
 fi
