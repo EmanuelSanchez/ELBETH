@@ -1,9 +1,8 @@
-`timescale 1ns / 1ps
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //==================================================================================================
 //  Filename      : id_exs_register.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-02 20:08:48
+//  Last Modified : 2016-03-07 21:02:51
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -58,7 +57,7 @@ module elbeth_id_exs_register(
 	always @(posedge clk) begin
 		exs_pc <= (rst | ctrl_flush) ? 32'b0 : (ctrl_stall) ? exs_pc : id_pc;
 		exs_instruction <= (rst | ctrl_flush) ? 32'b0 : (ctrl_stall) ? exs_instruction : id_instruction;
-		exs_alu_operation <= (rst | ctrl_flush) ? 5'b0 : (ctrl_stall) ? exs_alu_operation : id_alu_operation; 
+		exs_alu_operation <= (rst | ctrl_flush) ? 4'b0 : (ctrl_stall) ? exs_alu_operation : id_alu_operation;
 		exs_rs1_data <= (rst | ctrl_flush) ? 32'b0 : (ctrl_stall) ? exs_rs1_data : id_rs1_data;
 		exs_rs2_data <= (rst | ctrl_flush) ? 32'b0 : (ctrl_stall) ? exs_rs2_data : id_rs2_data;
 		exs_rd_addr <= (rst | ctrl_flush) ? 5'b0 : (ctrl_stall) ? exs_rd_addr : id_rd_addr;

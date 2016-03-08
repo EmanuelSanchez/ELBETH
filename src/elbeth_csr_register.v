@@ -1,9 +1,8 @@
-`timescale 1ns / 1ps
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //==================================================================================================
 //  Filename      : elbeth_csr_register.v
 //  Created On    : Mon Feb  22 08:51:00 2016
-//  Last Modified : 2016-03-02 20:25:14
+//  Last Modified : 2016-03-07 21:03:10
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -13,6 +12,10 @@
 //==================================================================================================
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 `include "elbeth_definitions.v"
+
+//Definir región ilegal y arreglar illegal acces en control
+//
+
 
 module elbeth_csr_register(
 		input                        clk,
@@ -26,13 +29,13 @@ module elbeth_csr_register(
 		input                        eret,
 		input [31:0] 		         exception_load_addr,
 		input [31:0]        		 exception_pc,
-	 	output [1:0]				 pvr,
-		output 						 interrupt,
+	 	output [1:0]				 prv,
+		output 						 io_interrupt,
 		output                       illegal_access,
 		output reg [31:0]		     rdata,
 		output [31:0]        		 handler_pc,
 		output [31:0]       		 epc,
-		output [3:0]				 interrupt_code
+		output [3:0]			 	 io_interrupt_code
 		);
 
 	reg [63:0]		cycle_full;
@@ -81,6 +84,13 @@ module elbeth_csr_register(
 	reg 			mecode;
 	reg 			mint;
 	reg 			interrupt_taken;
+	wire 			system_en;
+	wire 			system_wen;
+	wire [3:0]		code_imem;
+	wire 			illegal_region;
+	wire 			minterrupt;
+	wire 			uinterrupt;
+	reg  [3:0] 		interrupt_code;
 
 	//Some asignmaments
 	assign cycle = cycle_full[31:0];
@@ -103,13 +113,13 @@ module elbeth_csr_register(
 	assign system_en = cmd[2];
 	assign system_wen = cmd[1] | cmd[0];
 	assign mcause = {mint, 27'b0, mecode};
-	assign code_imem = ((exception_code == `ECODE_INST_ADDR_MISALIGNED) | (exception_code == `ECODE_INST_ADDR_FAULT)); // `ECODE_INST_ADDR_FAULT no aparece en vscale
+	assign code_imem = ((exception_code ==`ECODE_INST_ADDR_MISALIGNED) | (exception_code == `ECODE_INST_ADDR_FAULT)); // `ECODE_INST_ADDR_FAULT no aparece en vscale
 	assign illegal_region = ((system_wen & (addr[12-1:10] == 3)) | (system_en & (addr[10-1:8] > prv)));	
 
 	//Outpus
 	assign prv = priv_stack[2:1];
-	assign interrupt = mint;
-	assign interrupt_code = mecode;
+	assign io_interrupt = mint;
+	assign io_interrupt_code = mecode;
 	assign handler_pc = (mtvec + (prv << 6));  /// << 5 en vscale
 	assign illegal_access = (illegal_region || (system_en && (!defined)));
 	assign epc = mepc;
@@ -176,7 +186,7 @@ module elbeth_csr_register(
 
 	// Set the interrupt code and flag.
 	always @(prv, minterrupt, ie, uinterrupt) begin
-	    interrupt_code = 1;
+	    interrupt_code = 3'b1;
 	    case (prv)
 	        `PRV_U : begin 		interrupt_taken = ((ie & uinterrupt) | minterrupt); end
 	        `PRV_M :  begin 	interrupt_taken = (ie & minterrupt); end
@@ -219,7 +229,7 @@ module elbeth_csr_register(
 	    if (exception) begin
 	        mbadaddr <= (code_imem) ? exception_pc : exception_load_addr;
 	    end
-	    else if ((wen_internal & (rw_addr == `CSR_ADDR_MBADADDR))) begin
+	    else if ((wen_internal & (addr == `CSR_ADDR_MBADADDR))) begin
 	        mbadaddr <= wdata_internal;
 	    end
 	end

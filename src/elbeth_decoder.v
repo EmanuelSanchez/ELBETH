@@ -1,9 +1,8 @@
-`timescale 1ns / 1ps
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //==================================================================================================
 //  Filename      : elbeth_decoder.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-01 19:51:21
+//  Last Modified : 2016-03-07 21:03:02
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -21,13 +20,18 @@ module elbeth_decoder(
 	input 	[4:0]				inst_2,
 	input 	[4:0]				inst_3,
 	input 	[6:0]				inst_4,
+	input 	[1:0]				csr_prv,
     output reg [31:0]			id_offset_branch,
 	output reg	[2:0]			id_op_branch,
     output reg [4:0] 			id_rs1_addr,
     output reg [4:0] 			id_rs2_addr,
 	output reg [4:0] 			id_rd_addr,
 	output reg [31:0] 			id_imm_shamt,
-    output reg [3:0] 			id_op_alu
+    output reg [3:0] 			id_op_alu,
+    output reg 					id_illegal_instruction,
+    output	   [3:0] 			id_except_src,
+    output reg [2:0]			csr_cmd,
+    output reg [11:0]			csr_addr
     );
 
 	wire 	[4:0]			rd;
@@ -35,14 +39,24 @@ module elbeth_decoder(
 	wire 	[4:0]			rs2;
 	wire 	[2:0]			funct3;
 	wire					funct7;
+	wire 	[11:0]			funct12;
+	reg 					ecall;
+	reg 					ebreak;
 	
 	assign rd = inst_0;
 	assign funct3 = inst_1;
 	assign rs1 = inst_2;
 	assign rs2 = inst_3;
 	assign funct7 = inst_4[5];
+	assign funct12 = {{inst_4[6:0]}, {inst_3[4:0]}};
+	assign id_except_src = (id_illegal_instruction) ? `ECODE_ILLEGAL_INST : 4'b0;
 
 	always @(*) begin
+		ecall = 1'b0;
+		ebreak = 1'b0;
+		id_illegal_instruction = 1'b0;
+		csr_addr = 12'bx;
+		csr_cmd = 3'bx;
 		case (opcode)
 				`OP_TYPE_R :	begin
 						id_rd_addr <= rd;
@@ -143,6 +157,63 @@ module elbeth_decoder(
 						id_op_alu <= `OP_ADD;
 						id_op_branch <= `OP_JAL;
 				end
+				`OP_TYPE_SYSTEM : begin
+						id_rd_addr <= rd;
+						csr_addr <= funct12;						//falta agregar a la pared id_exs
+						case (funct3)
+								`F3_PRIV :	begin
+									if ((id_rs1_addr == 0) && (id_rd_addr == 0)) begin
+											case (funct12)
+													`FUNCT12_ECALL : ecall = 1'b1;
+													`FUNCT12_EBREAK : ebreak = 1'b1;
+													`FUNCT12_ERET : begin
+														if (csr_prv == 0)
+																id_illegal_instruction = 1'b1;
+													end // FUNCT12_ERET :
+													default : id_illegal_instruction = 1'b1;
+											endcase // funct12
+										end // if ((id_rs1_addr == 0) && (id_rd_addr == 0))
+								end // case : F3_PRIV
+								`F3_CSRRW :	begin	
+									csr_cmd <= (id_rs1_addr == 5'b0) ? `CSR_READ : `CSR_WRITE; 
+									id_rs1_addr <= rs1;
+									id_rs2_addr <= 5'b0;
+									id_op_alu <= `OP_ADD;
+								end
+								`F3_CSRRS :	begin	
+									csr_cmd <= (id_rs1_addr == 0) ? `CSR_READ : `CSR_SET; 
+									id_rs1_addr <= rs1;
+									id_rs2_addr <= 5'b0;
+									id_op_alu <= `OP_ADD;
+								end
+								`F3_CSRRC :	begin	
+									csr_cmd <= (id_rs1_addr == 0) ? `CSR_READ : `CSR_CLEAR; 
+									id_rs1_addr <= rs1;
+									id_rs2_addr <= 5'b0;
+									id_op_alu <= `OP_ADD;
+								end
+								`F3_CSRRWI : begin	
+									csr_cmd <= (id_rs1_addr == 0) ? `CSR_READ : `CSR_WRITE; 
+									id_imm_shamt <= {{27'b0}, {inst_2[4:0]}};
+									id_rs1_addr <= 5'b0;
+									id_op_alu <= `OP_ADD;
+								end
+								`F3_CSRRSI : begin	
+									csr_cmd <= (id_rs1_addr == 0) ? `CSR_READ : `CSR_SET; 
+									id_imm_shamt <= {{27'b0}, {inst_2[4:0]}};
+									id_rs1_addr <= 5'b0;
+									id_op_alu <= `OP_ADD;
+								end
+								`F3_CSRRCI : begin	
+									csr_cmd <= (id_rs1_addr == 0) ? `CSR_READ : `CSR_CLEAR; 
+									id_imm_shamt <= {{27'b0}, {inst_2[4:0]}};
+									id_rs1_addr <= 5'b0;
+									id_op_alu <= `OP_ADD;
+								end
+								default : begin	id_illegal_instruction = 1'b1; end
+						endcase // case(funct3)
+				end // case : OP_TYPE_SYSTEM
+				default : begin id_illegal_instruction = 1'b1; end
 		endcase // opcode
 	end // always @(*)
 endmodule // elbeth_decoder
