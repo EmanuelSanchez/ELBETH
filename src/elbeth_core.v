@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-01 23:29:20
+//  Last Modified : 2016-03-07 21:12:03
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -14,6 +14,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 `include "elbeth_mux_2_to_1.v"
 `include "elbeth_mux_3_to_1.v"
+`include "elbeth_mux_4_to_1.v"
 `include "elbeth_control_unit.v"
 `include "elbeth_add4.v"
 `include "elbeth_pc_register.v"
@@ -24,7 +25,9 @@
 `include "elbeth_register_file.v"
 `include "elbeth_id_exs_register.v"
 `include "elbeth_alu.v"
+`include "elbeth_csr_register.v"
 `include "elbeth_zero_signed_extend.v"
+`include "elbeth_bridge_memory.v"
 
 module elbeth_core(
     input			 	 clk,
@@ -48,13 +51,14 @@ module elbeth_core(
 	output [31:0]		 dmem_out_data		
     );
 	 
+	//Wires to instruction fetch
+	 wire 	[31:0]		if_instruction;
 	//Wires to instruction memory
 	 wire 	[31:0]		if_pc_add4;
 	 wire 	[1:0]		if_pc_select;
 	 wire 	[31:0]		if_pc;
 	 wire   [31:0]		if_next_pc;
-
-	 wire 	[31:0]		if_instruction;
+	 wire 				pc_reg_stall;
 	//Wires to instruction decode
 	 wire 	[31:0]		id_pc;
 	 wire 	[31:0]		id_pc_branch;
@@ -72,6 +76,17 @@ module elbeth_core(
 	 wire 	[1:0]		id_alu_port_a_select;
 	 wire 	[1:0]		id_alu_port_b_select;
 	 wire 	[3:0] 		id_mem_rw;
+	 wire 	[2:0]		id_csr_cmd;
+	 wire 	[3:0]		id_except_source;
+	 wire 				reg_file_w_en;
+	//Wires to instruction segmentation
+	 wire	[31:0]		id_instruction;
+	 wire	[6:0]		opcode;
+	 wire	[4:0]		inst_0;
+	 wire	[2:0]		inst_1;
+	 wire	[4:0]		inst_2;
+	 wire	[4:0]		inst_3;
+	 wire	[6:0]		inst_4;
 	//Wires to execute
 	 wire 	[31:0]		exs_pc_except;
 	 wire 	[4:0]		exs_rd_addr;
@@ -91,29 +106,14 @@ module elbeth_core(
 	//Wires to data memory
 	 wire	[31:0]		exs_data_memory_out;
 	 wire	[3:0]		exs_mem_rw;
-	//Wires to instruction segmentation
-	 wire	[31:0]		id_instruction;
-	 wire	[6:0]		opcode;
-	 wire	[4:0]		inst_0;
-	 wire	[2:0]		inst_1;
-	 wire	[4:0]		inst_2;
-	 wire	[4:0]		inst_3;
-	 wire	[6:0]		inst_4;
+	//Wires to CSR
+	 wire [11:0]		exs_csr_addr;
+	 wire [31:0]		exs_epc;
+	 wire [2:0]			exs_csr_cmd;
+	 wire [31:0]		exs_csr_wdata;
+	 wire [1:0] 		prv;
 
-	 wire 				pc_reg_stall;
-	 
-	//Instruction memory asignaments
-	 assign	if_instruction = imem_in_data;
-	 assign	imem_addr    = if_pc;
-	 assign imem_en = 1'b1;
-	 assign imem_rw = 4'b0;
-	 assign imem_out_data = 32'bx;
-	//Data memory asignaments
-	 assign	exs_data_memory_out = dmem_in_data;
-	 assign	dmem_addr 		= exs_alu_result;
-	 assign	dmem_en 		= exs_mem_en;
-	 assign	dmem_rw			= exs_mem_rw;
-	 assign	dmem_out_data	= exs_rs2_data;
+	 assign exs_data_size = exs_mem_rw;
 	//Instruction segmentation
 	 assign opcode = id_instruction[6:0];
 	 assign inst_0 = id_instruction[11:7];
@@ -121,11 +121,8 @@ module elbeth_core(
 	 assign inst_2 = id_instruction[19:15];
 	 assign inst_3 = id_instruction[24:20];
 	 assign inst_4 = id_instruction[31:25];
-	 //PC register stall
-	 assign pc_reg_stall = if_stall | id_stall;
-
-	 assign exs_data_size = exs_mem_rw;
-
+	//Registeer file enable
+	 assign reg_file_w_en = (!id_stall) & exs_gpr_w;
 	 
 //--------------------------------------------------------------------------
 // IF stage
@@ -138,11 +135,12 @@ module elbeth_core(
 		 .out(if_pc_add4)
 		 );
 
-	elbeth_mux_3_to_1 pc_select (
+	elbeth_mux_4_to_1 pc_select (
 		//Inputs
 		.mux_in_1(if_pc_add4), 
 		.mux_in_2(id_pc_branch), 
 		.mux_in_3(exs_pc_except),
+		.mux_in_4(exs_epc),
 		//IN Control Signals
 		.bit_select(if_pc_select), 
 		//Outputs
@@ -155,23 +153,61 @@ module elbeth_core(
 		 .rst(rst),
 		 .next_pc(if_next_pc),
 		 //In Control Signals
-		 .ctrl_stall(pc_reg_stall),
+		 .ctrl_stall(if_pc_stall),
 		 //Outputs
 		 .pc(if_pc)
 		 );
+
+	elbeth_bridge_memory brige_memory_cpu(
+		//Memory port A
+		.amem_en(imem_en),
+		.amem_addr(imem_addr),
+		.amem_in_data(imem_in_data),
+		.amem_rw(imem_rw),
+		.amem_out_data(imem_out_data),
+		.amem_ready(imem_ready),
+		.amem_error(imem_error),
+		//Memory port B
+		.bmem_en(dmem_en),
+		.bmem_addr(dmem_addr),
+		.bmem_in_data(dmem_in_data),
+		.bmem_rw(dmem_rw),
+		.bmem_out_data(dmem_out_data),
+		.bmem_ready(dmem_ready),
+		.bmem_error(dmem_error),
+		//Processor instruction memory
+		.imem_addr(if_pc),
+		.imem_in_data(if_instruction),
+		.imem_ready(id_imem_ready),
+		.imem_except(id_except_from_if),
+		.imem_except_src(id_except_src_from_if),
+		//Processor data memory 
+		.dmem_en(exs_mem_en),
+		.dmem_addr(exs_alu_result),
+		.dmem_out_data(exs_rs2_data),
+		.dmem_rw(exs_mem_rw),
+		.dmem_in_data(exs_data_memory_out),
+		.dmem_ready(exs_dmem_ready),
+		.dmem_except(exs_except_from_mem),
+		.dmem_except_src(exs_except_src_from_mem)
+		);
 
 	elbeth_if_id_register if_id_register (
 		 //Inputs
 		 .clk(clk), 
 		 .rst(rst), 
 		 .if_instruction(if_instruction), 
-		 .if_pc(if_pc), 
-		 //In Control Signals
+		 .if_pc(if_pc),
+		 .if_exception(if_exception),			//Falta agregar la fuente
+		 .if_except_src(if_except_src),
+		 //In Control Signals 
 		 .ctrl_stall(if_stall), 
 		 .ctrl_flush(if_flush),
 		 //Outputs
 		 .id_instruction(id_instruction),
-		 .id_pc(id_pc)
+		 .id_pc(id_pc),
+		 .id_exception(id_except_from_if),
+		 .id_except_source(id_except_src_from_if)
 		 );
 		 
 //--------------------------------------------------------------------------
@@ -185,7 +221,8 @@ module elbeth_core(
 		 .inst_1(inst_1), 
 		 .inst_2(inst_2), 
 		 .inst_3(inst_3), 
-		 .inst_4(inst_4), 
+		 .inst_4(inst_4),
+		 .csr_prv(csr_prv),
 		 //Outputs
 		 .id_offset_branch(id_offset_branch), 
 		 .id_op_branch(id_op_branch), 
@@ -193,7 +230,11 @@ module elbeth_core(
 		 .id_rs2_addr(id_rs2_addr), 
 		 .id_rd_addr(id_rd_addr), 
 		 .id_imm_shamt(id_imm_shamt), 
-		 .id_op_alu(id_op_alu)
+		 .id_op_alu(id_op_alu),
+		 .id_illegal_instruction(id_except_from_decode),
+		 .id_except_src(id_except_src_decode),
+		 .csr_cmd(id_csr_cmd),
+		 .csr_addr(id_csr_cmd)
 		 );
 
 	elbeth_hazard_unit hazard_unit (
@@ -213,7 +254,7 @@ module elbeth_core(
 		 .rd_data(exs_rd_data), 
 		 .rd_addr(exs_rd_addr),
 		 //In Control Signals
-		 .ctrl_w_enable(exs_gpr_w),
+		 .ctrl_w_enable(reg_file_w_en),
 		 //Outputs
 		 .id_rs1_data(id_rs1_data_gpr), 
 		 .id_rs2_data(id_rs2_data_gpr)
@@ -229,6 +270,16 @@ module elbeth_core(
 		 //Ouputs
 		 .pc_branch(id_pc_branch),
 		 .branch_taken(branch_taken)
+		 );
+
+	elbeth_mux_2_to_1 id_except_src_select (
+		 //Inputs
+		 .mux_in_1(id_except_src_from_if),
+		 .mux_in_2(id_except_src_decode), 			//Falta en Decoder
+		 //In Control Signals
+		 .bit_select(id_except_src_select), 
+		 //Outputs
+		 .mux_out(id_except_src)
 		 );
 
 	elbeth_mux_2_to_1 rs1_select (
@@ -257,7 +308,8 @@ module elbeth_core(
 		 .rst(rst), 
 		 .ctrl_stall(id_stall), 
 		 .ctrl_flush(id_flush),
-		 .id_pc(id_pc), 
+		 .id_pc(id_pc),
+		 .id_instruction(id_instruction),
 		 .id_alu_operation(id_op_alu), 
 		 .id_rs1_data(id_rs1_data), 
 		 .id_rs2_data(id_rs2_data), 
@@ -271,9 +323,13 @@ module elbeth_core(
 		 .id_ctrl_mem_en(id_mem_en), 
 		 .id_ctrl_mem_rw(id_mem_rw), 
 		 .id_data_sign_mem(id_data_sign_mem),
-		 .id_exception(id_exception),
+		 .id_exception(id_except_to_exs),
+		 .id_except_source(id_except_src),
+		 .id_eret(id_eret),
+		 .id_csr_cmd(id_csr_cmd),
 		 //Outpus
-		 .exs_pc(exs_pc), 
+		 .exs_pc(exs_pc),
+		 .exs_instruction(exs_instruction),
 		 .exs_alu_operation(exs_alu_operation), 
 		 .exs_rs1_data(exs_rs1_data), 
 		 .exs_rs2_data(exs_rs2_data), 
@@ -287,7 +343,10 @@ module elbeth_core(
 		 .exs_ctrl_mem_en(exs_mem_en), 
 		 .exs_ctrl_mem_rw(exs_mem_rw), 
 		 .exs_data_sign_mem(exs_data_sign_mem),
-		 .exs_exception(exs_exception)
+		 .exs_exception(exs_except_from_id),
+		 .exs_except_src(exs_except_src_from_id),
+		 .exs_eret(exs_eret),
+		 .exs_csr_cmd(exs_csr_cmd)
 		 );
 		 
 //--------------------------------------------------------------------------
@@ -342,6 +401,39 @@ module elbeth_core(
 		 //Outputs
 		 .mux_out(exs_rd_data)
 		 );
+
+	elbeth_mux_2_to_1 exs_except_src_select (
+		 //Inputs
+		 .mux_in_1(exs_except_src_from_id),
+		 .mux_in_2(exs_except_src_from_mem), 			//Falta asignar fuente
+		 //In Control Signals
+		 .bit_select(exs_except_src_select), 
+		 //Outputs
+		 .mux_out(exs_except_src)
+		 );
+
+	elbeth_csr_register csr(
+		 //Inputs
+		 .clk(clk),
+		 .rst(rst),
+		 .addr(exs_csr_addr),
+		 .cmd(exs_csr_cmd),
+		 .wdata(exs_alu_result),
+		 .retire(exs_retire),  							
+		 .exception(exs_csr_exception),
+		 .exception_code(exs_except_src),
+		 .eret(exs_eret),									// Falta agregar a control (output)
+		 .exception_load_addr(exs_alu_result),
+		 .exception_pc(exs_pc),
+		 .prv(csr_prv),
+		 .io_interrupt(),
+		 .illegal_access(except_illegal_acces),
+		 .rdata(),
+		 .handler_pc(exs_pc_except),
+		 .epc(exs_epc),
+		 .op_interrupt_code()
+		 );
+	
 //--------------------------------------------------------------------------
 // Control Unit
 //--------------------------------------------------------------------------
@@ -351,29 +443,42 @@ module elbeth_core(
 		 .rst(rst),
 		 .if_opcode(opcode),
 		 .if_funct3(inst_1),
+		 .exs_funct3(exs_funct3),
 		 //In Control Signals
-		 .if_imem_ready(imem_ready),
+		 .if_imem_ready(id_imem_ready),
 		 .if_imem_en(imem_en),
 		 .id_match_forward_rs1(id_match_forward_rs1),
 		 .id_match_forward_rs2(id_match_forward_rs2),
 		 .id_branch_taken(branch_taken),
-		 .exs_dmem_ready(dmem_ready),
+		 .id_except_from_if(id_except_from_if),
+		 .id_except_from_decode(id_except_from_decode),
+		 .exs_dmem_ready(exs_dmem_ready),
 		 .exs_dmem_en(dmem_en),
-		 .exs_exception(exs_exception),
+		 .exs_except_from_id(exs_except_from_id),
+		 .exs_except_from_mem(exs_except_from_mem),
+		 .except_illegal_acces(except_illegal_acces),
 		 //Out Control Signals
 		 .if_stall(if_stall),
-		 .id_stall(id_stall),
 		 .if_flush(if_flush),
+		 .if_pc_stall(if_pc_stall),
+		 .id_stall(id_stall),
 		 .id_flush(id_flush),
-		 .if_pc_select(if_pc_select), 
+		 .if_pc_select(if_pc_select),
 		 .id_rs1_select(id_rs1_select),
 		 .id_rs2_select(id_rs2_select),
 		 .id_alu_port_a_select(id_alu_port_a_select), 
 		 .id_alu_port_b_select(id_alu_port_b_select), 
 		 .id_data_w_reg_select(id_data_w_gpr_select), 
 		 .id_reg_w(id_gpr_w),
-		 .id_mem_en(id_mem_en), 
+		 .id_mem_en(id_mem_en),
 		 .id_mem_rw(id_mem_rw), 
-		 .id_data_sign_mem(id_data_sign_mem)
+		 .id_data_sign_mem(id_data_sign_mem),
+		 .id_except_to_exs(id_except_to_exs),
+		 .id_except_src_select(id_except_src_select),
+		 .exs_stall(exs_stall),
+		 .exs_csr_imm_select(exs_csr_imm_select),
+		 .exs_except_src_select(exs_except_src_select),
+		 .exs_retire(exs_retire),
+		 .exs_csr_exception(exs_csr_exception)
 		 );
 endmodule // core
