@@ -1,9 +1,8 @@
-`timescale 1ns / 1ps
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //==================================================================================================
 //  Filename      : pc_registrer.v
 //  Created On    : Tue Jan  19 06:40:00 2016
-//  Last Modified : 2016-02-29 08:59:18
+//  Last Modified : 2016-03-07 21:02:21
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth 
 //  Company       : Universidad Simón Bolívar

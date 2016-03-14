@@ -1,9 +1,8 @@
-`timescale 1ns / 1ps
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //==================================================================================================
 //  Filename      : memory.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-05 18:32:32
+//  Last Modified : 2016-03-07 21:02:36
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar

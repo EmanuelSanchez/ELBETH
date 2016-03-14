@@ -1,9 +1,8 @@
-`timescale 1ns / 1ps
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //==================================================================================================
 //  Filename      : elbeth_hazard_unit1.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-01 20:10:21
+//  Last Modified : 2016-03-07 21:01:17
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar

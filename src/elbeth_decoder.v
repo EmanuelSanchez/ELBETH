@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_decoder.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-07 21:03:02
+//  Last Modified : 2016-03-14 15:22:00
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -31,7 +31,8 @@ module elbeth_decoder(
     output reg 					id_illegal_instruction,
     output	   [3:0] 			id_except_src,
     output reg [2:0]			csr_cmd,
-    output reg [11:0]			csr_addr
+    output reg [11:0]			csr_addr,
+    output reg 					id_eret
     );
 
 	wire 	[4:0]			rd;
@@ -57,6 +58,7 @@ module elbeth_decoder(
 		id_illegal_instruction = 1'b0;
 		csr_addr = 12'bx;
 		csr_cmd = 3'bx;
+		id_eret = 1'b0;
 		case (opcode)
 				`OP_TYPE_R :	begin
 						id_rd_addr <= rd;
@@ -169,6 +171,8 @@ module elbeth_decoder(
 													`FUNCT12_ERET : begin
 														if (csr_prv == 0)
 																id_illegal_instruction = 1'b1;
+														else
+																id_eret = 1'b1;
 													end // FUNCT12_ERET :
 													default : id_illegal_instruction = 1'b1;
 											endcase // funct12

@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_bridge_memory.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-06 17:21:02
+//  Last Modified : 2016-03-14 09:56:29
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -15,7 +15,7 @@
 
 module elbeth_bridge_memory(
 	//Memory port A
-	output 				 amem_enable,
+	output 				 amem_en,
 	output [7:0]		 amem_addr,
 	output [31:0]		 amem_out_data,
 	output [3:0]		 amem_rw,
@@ -23,7 +23,7 @@ module elbeth_bridge_memory(
 	input  				 amem_ready,
 	input				 amem_error,
 	//Memory port B
-	output 				 bmem_enable,
+	output 				 bmem_en,
 	output [7:0]		 bmem_addr,	
 	output [31:0]		 bmem_out_data,	
 	output [3:0]		 bmem_rw,
@@ -37,7 +37,7 @@ module elbeth_bridge_memory(
 	output				 imem_except,
 	output [3:0]		 imem_except_src,
 	//Processor data memory 
-	input 				 dmem_enable,
+	input 				 dmem_en,
 	input  [31:0]		 dmem_addr,
 	input  [31:0]		 dmem_out_data,
 	input  [3:0]	 	 dmem_rw,
@@ -53,11 +53,11 @@ module elbeth_bridge_memory(
 	assign imem_ready = amem_ready;
 
 	assign amem_addr = (!imem_except) ? imem_addr[9:2] : 8'bx;
-	assign amem_enable= 1'b1;
+	assign amem_en= 1'b1;
 	assign amem_rw = 4'b0;
 	assign amem_out_data = 31'bz;
 
-	assign dmem_except = (dmem_enable & ((|dmem_addr[1:0]) | bmem_error )) ? 1'b1 : 1'b0;
+	assign dmem_except = (dmem_en & ((|dmem_addr[1:0]) | bmem_error )) ? 1'b1 : 1'b0;
 
 	always @(*) begin
 		if (dmem_except) begin
@@ -77,8 +77,8 @@ module elbeth_bridge_memory(
 	assign dmem_in_data = bmem_in_data;
 	assign dmem_ready = bmem_ready;
 
-	assign bmem_addr = ((!dmem_except) & dmem_enable) ? dmem_addr[9:2] : 8'bx;
-	assign bmem_enable = dmem_enable;
+	assign bmem_addr = ((!dmem_except) & dmem_en) ? dmem_addr[9:2] : 8'bx;
+	assign bmem_en = dmem_en;
 	assign bmem_rw = dmem_rw;
 	assign bmem_out_data = dmem_out_data;
 
