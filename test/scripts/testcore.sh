@@ -77,6 +77,7 @@ cp $SIMULATING_FOLDER/$1.v $SOURCES_FOLDER/$1.v
 cp $SIMULATING_FOLDER/$3 $SOURCES_FOLDER/$3
 cd $SOURCES_FOLDER
 iverilog -o $file_vvp $file_verilog_tb
+rm $SOURCES_FOLDER/$1.v
 
 ###############################################################################
 #                       Check if module was compiled                          #
@@ -118,5 +119,4 @@ gtkwave $file_vcd
 
 mv $SOURCES_FOLDER/$1.vcd $SIMULATING_FOLDER/$1.vcd
 rm $SOURCES_FOLDER/$file_vvp
-rm $SOURCES_FOLDER/$1.v
 rm $SOURCES_FOLDER/$3
