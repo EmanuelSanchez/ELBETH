@@ -30,13 +30,10 @@ module core_tb();
 	initial
 		begin
 			$dumpfile("core_tb.vcd");
-			$dumpvars(0,core_tb1);
+			$dumpvars(0,core_tb);
 
-		#50
+		#200
 		rst = 0;
-		
-		#100
-		rst=1'b1;
 		#1000
 		$finish;
 	
@@ -51,7 +48,7 @@ module core_tb();
 		imem_addr,
 		imem_in_data,
 		imem_rw,
-		imem_out_data
+		imem_out_data,
 		imem_ready,
 		//Port B	
 		dmem_en,
@@ -65,19 +62,22 @@ module core_tb();
 		clk,
 		rst,
 		//Instruction memory
-		imem_en,
-		imem_addr,
-		imem_in_data,
-		imem_rw,
-		imem_out_data
+		imem_out_data,
 		imem_ready,
+		imem_error,
+		imem_addr,
+		imem_en,
+		imem_rw,
+		imem_in_data,
+		
 		//Data memory
-		dmem_en,
-		dmem_addr,
-		dmem_in_data,
-		dmem_rw,
 		dmem_out_data,
-		dmem_ready
+		dmem_ready,
+		dmem_error,
+		dmem_addr,
+		dmem_en,
+		dmem_rw,
+		dmem_in_data
 		);
 
 endmodule
