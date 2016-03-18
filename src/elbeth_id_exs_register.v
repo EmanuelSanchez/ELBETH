@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : id_exs_register.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-14 15:38:40
+//  Last Modified : 2016-03-17 10:55:27
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -25,7 +25,7 @@ module elbeth_id_exs_register(
 	input [31:0] 			id_imm_shamt, 
 	input					id_ctrl_alu_port_a_select,
 	input					id_ctrl_alu_port_b_select,
-	input					id_ctrl_data_w_reg_select,
+	input [1:0]				id_ctrl_data_w_reg_select,
 	input					id_ctrl_reg_w,
 	input					id_ctrl_mem_en,
 	input [3:0]				id_ctrl_mem_rw,
@@ -44,7 +44,7 @@ module elbeth_id_exs_register(
 	output reg [31:0]  		exs_imm_shamt,
 	output reg 	 			exs_ctrl_alu_port_a_select,
 	output reg 				exs_ctrl_alu_port_b_select,
-	output reg				exs_ctrl_data_w_reg_select,
+	output reg [1:0]		exs_ctrl_data_w_reg_select,
 	output reg				exs_ctrl_reg_w,
 	output reg				exs_ctrl_mem_en,
 	output reg [3:0]		exs_ctrl_mem_rw,

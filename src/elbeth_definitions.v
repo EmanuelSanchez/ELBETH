@@ -1,7 +1,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-03-14 15:37:01
+//  Last Modified : 2016-03-17 23:24:15
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -11,10 +11,11 @@
 //==================================================================================================
 
 //--------------------------------------------------------------------------
-// Maximum range
+// Others definitions
 //--------------------------------------------------------------------------
 
 `define MAX_RANGE			32'hFFFFFFFF	// maximum value represented with 32 bits
+`define NOP					32'h00000033	//Nop or burble
 
 //--------------------------------------------------------------------------
 // Instruction formats: opcodes types instructions
@@ -88,7 +89,7 @@
 `define U_LUI_CTRL_VECTOR			13'b110010xxxxx			//revisar
 `define U_AUIPC_CTRL_VECTOR			13'b110010xxxxx			//revisar
 `define UJ_JAL_CTRL_VECTOR			13'b11xx00xxxxx			//revisar 
-`define CSR_PRV_CTRL_VECTOR			13'bxxxx00xxxxx
+`define CSR_PRV_CTRL_VECTOR			13'bxxxxxxxxxxx
 `define CSR_CMD_CTRL_VECTOR 		13'b001010xxxxx
 `define CSR_CMDI_CTRL_VECTOR		13'b011010xxxxx
 

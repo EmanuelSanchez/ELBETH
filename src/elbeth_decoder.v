@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_decoder.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-14 15:22:00
+//  Last Modified : 2016-03-18 00:18:36
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -14,6 +14,7 @@
 `include "elbeth_definitions.v"
 
 module elbeth_decoder(
+	input						rst,
     input 	[6:0] 				opcode,
 	input 	[4:0]				inst_0,
 	input 	[2:0]				inst_1,
@@ -28,7 +29,7 @@ module elbeth_decoder(
 	output reg [4:0] 			id_rd_addr,
 	output reg [31:0] 			id_imm_shamt,
     output reg [3:0] 			id_op_alu,
-    output reg 					id_illegal_instruction,
+    output	 					id_illegal_instruction,
     output	   [3:0] 			id_except_src,
     output reg [2:0]			csr_cmd,
     output reg [11:0]			csr_addr,
@@ -41,6 +42,7 @@ module elbeth_decoder(
 	wire 	[2:0]			funct3;
 	wire					funct7;
 	wire 	[11:0]			funct12;
+	reg 					illegal_instruction;
 	reg 					ecall;
 	reg 					ebreak;
 	
@@ -50,14 +52,15 @@ module elbeth_decoder(
 	assign rs2 = inst_3;
 	assign funct7 = inst_4[5];
 	assign funct12 = {{inst_4[6:0]}, {inst_3[4:0]}};
-	assign id_except_src = (id_illegal_instruction) ? `ECODE_ILLEGAL_INST : 4'b0;
+	assign id_except_src = (illegal_instruction) ? `ECODE_ILLEGAL_INST : 4'b0;
+	assign id_illegal_instruction = (rst) ? 1'b0 : illegal_instruction;
 
 	always @(*) begin
 		ecall = 1'b0;
 		ebreak = 1'b0;
-		id_illegal_instruction = 1'b0;
-		csr_addr = 12'bx;
-		csr_cmd = 3'bx;
+		illegal_instruction = 1'b0;
+		csr_addr = 12'b0;
+		csr_cmd = 3'b0;
 		id_eret = 1'b0;
 		case (opcode)
 				`OP_TYPE_R :	begin
@@ -170,11 +173,11 @@ module elbeth_decoder(
 													`FUNCT12_EBREAK : ebreak = 1'b1;
 													`FUNCT12_ERET : begin
 														if (csr_prv == 0)
-																id_illegal_instruction = 1'b1;
+																illegal_instruction = 1'b1;
 														else
 																id_eret = 1'b1;
 													end // FUNCT12_ERET :
-													default : id_illegal_instruction = 1'b1;
+													default : illegal_instruction = 1'b1;
 											endcase // funct12
 										end // if ((id_rs1_addr == 0) && (id_rd_addr == 0))
 								end // case : F3_PRIV
@@ -214,10 +217,10 @@ module elbeth_decoder(
 									id_rs1_addr <= 5'b0;
 									id_op_alu <= `OP_ADD;
 								end
-								default : begin	id_illegal_instruction = 1'b1; end
+								default : begin	illegal_instruction = 1'b1; end
 						endcase // case(funct3)
 				end // case : OP_TYPE_SYSTEM
-				default : begin id_illegal_instruction = 1'b1; end
+				default : begin illegal_instruction = 1'b1; end
 		endcase // opcode
 	end // always @(*)
 endmodule // elbeth_decoder

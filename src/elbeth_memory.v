@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : memory.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-07 21:02:36
+//  Last Modified : 2016-03-17 22:52:12
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -16,8 +16,9 @@
 
 module elbeth_memory #(
 	parameter AW = 8,						// Memory address width
-	parameter DW = 32						// Memory data width
-	)(    
+	parameter DW = 32,						// Memory data width
+    parameter FILE_MEM = "memory.hex"
+	)(   
     input clk,
 	input rst,
 	//Port A
@@ -35,9 +36,9 @@ module elbeth_memory #(
 	output	reg [31:0]		bmem_data_out,
 	output	reg				bmem_ready
     );
-	 
+
 	localparam NPOS = 2 ** AW;				// Positions number in memory
-	
+
 	reg    [DW-1:0]	memory_array [0: NPOS - 1];		// MEMORIA DE 256 PALABRAS. CADA POSICION DE MEMORIA (DE 1 A 256)
     reg     [31:0]  amem_d_out;                     // PARA DIRECCIONAR 256 POSICIONES, SE NECESITAN 8 BITS (amem_addr y bmem_addr)
     reg     [31:0]  bmem_d_out; //
@@ -49,11 +50,7 @@ module elbeth_memory #(
     initial 
 
     begin
-        $readmemh("memory_hex.txt", memory_array);
-    end
-
-    always @(*) begin
-        $writememh("memory_hex.txt", memory_array);
+        $readmemh(FILE_MEM, memory_array);
     end
 
     //--------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-14 15:40:15
+//  Last Modified : 2016-03-18 00:05:27
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -34,24 +34,24 @@ module elbeth_core(
     input			 	 clk,
     input				 rst,
 	//Instruction memory
-	input  [31:0]		 imem_in_data,		//douta = instruction
+	input  [31:0]		 imem_in_data,		//instruction
 	input  				 imem_ready,
 	input 				 imem_error,
-	output [7:0]		 imem_addr,			//addra  = pc
+	output [7:0]		 imem_addr,			//pc
 	output 				 imem_en,
 	output [3:0]		 imem_rw,
 	output [31:0]		 imem_out_data,
 
 	//Data memory
-	input  [31:0]		 dmem_in_data,		//doutb = data
+	input  [31:0]		 dmem_in_data,
 	input 				 dmem_ready,
 	input 				 dmem_error,
-	output [7:0]		 dmem_addr,			//addrb = alu_result
+	output [7:0]		 dmem_addr,
 	output 				 dmem_en,
 	output [3:0]		 dmem_rw,
-	output [31:0]		 dmem_out_data		
+	output [31:0]		 dmem_out_data
     );
-	 
+
 	//Wires to instruction fetch
 	 wire 	[31:0]		if_instruction;
 	//Wires to instruction memory
@@ -79,6 +79,7 @@ module elbeth_core(
 	 wire 	[3:0] 		id_mem_rw;
 	 wire 	[2:0]		id_csr_cmd;
 	 wire 	[11:0]		id_csr_addr;
+	 wire  	[1:0] 		id_data_w_gpr_select;
 	 wire 	[3:0] 		id_except_src_from_if;
 	 wire 	[3:0]		id_except_src_decode;
 	 wire 	[3:0] 		id_except_src;
@@ -108,6 +109,7 @@ module elbeth_core(
 	 wire 	[31:0]		exs_gpr_data_mem;
 	 wire 	[3:0] 		exs_except_src_from_id;
 	 wire 	[3:0] 		exs_except_src;
+	 wire  	[1:0] 		exs_data_w_gpr_select;
 	//Wires to data memory
 	 wire	[31:0]		exs_data_memory_out;
 	 wire	[3:0]		exs_mem_rw;
@@ -223,6 +225,7 @@ module elbeth_core(
 
 	elbeth_decoder decoder_unit (
 		 //Inputs
+		 .rst(rst),
 		 .opcode(opcode), 
 		 .inst_0(inst_0), 
 		 .inst_1(inst_1), 
@@ -402,10 +405,11 @@ module elbeth_core(
 		 .out_data_mem(exs_gpr_data_mem)
 		 );
 
-	elbeth_mux_2_to_1 write_reg_data_select(
+	elbeth_mux_3_to_1 write_reg_data_select(
 		 //Inputs
 		 .mux_in_1(exs_alu_result), 
-		 .mux_in_2(exs_gpr_data_mem), 
+		 .mux_in_2(exs_gpr_data_mem),
+		 .mux_in_3(exs_csr_wdata),
 		 //In Control Signals
 		 .bit_select(exs_data_w_gpr_select), 
 		 //Outputs
@@ -438,7 +442,7 @@ module elbeth_core(
 		 .prv(csr_prv),
 		 .io_interrupt(),
 		 .illegal_access(except_illegal_acces),
-		 .rdata(),
+		 .rdata(exs_csr_wdata),
 		 .handler_pc(exs_pc_except),
 		 .epc(exs_epc),
 		 .io_interrupt_code()

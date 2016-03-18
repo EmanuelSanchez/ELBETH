@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_control_unit.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-14 15:41:00
+//  Last Modified : 2016-03-17 10:56:10
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -40,7 +40,7 @@ module elbeth_control_unit(
 	output							id_rs2_select,			// .
 	output							id_alu_port_a_select,	// .
 	output							id_alu_port_b_select,	// .
-	output							id_data_w_reg_select,	// .
+	output	[1:0]					id_data_w_reg_select,	// .
 	output							id_reg_w,				// .
 	output 							id_mem_en,				// .
 	output	[3:0]					id_mem_rw,				// .
@@ -69,12 +69,12 @@ module elbeth_control_unit(
 
 	//Other control signals
 	assign	if_pc_stall = imem_request_stall | dmem_request_stall;
-	assign	if_stall = imem_request_stall | dmem_request_stall;
-	assign 	if_flush = id_branch_taken | exs_except;	
-	assign	id_stall = dmem_request_stall;
+	assign	if_stall = (rst) ? 1'b1 : imem_request_stall | dmem_request_stall;
+	assign 	if_flush = (rst) ? 1'b0 : id_branch_taken | exs_except;
+	assign	id_stall = (rst) ? 1'b1 : dmem_request_stall;
 	assign  id_data_size_mem = id_mem_rw;							//
 	assign 	id_except_src_select = (id_except_from_if) ? 1'b0 : 1'b1;			//
-	assign  id_flush = exs_except;								//
+	assign  id_flush = (rst) ? 1'b0 : exs_except;								//	
 	assign 	id_exception = id_except;
 	assign 	exs_csr_imm_select = exs_funct3[2];
 	assign  exs_retire = !(exs_exception | id_stall | id_flush);
@@ -120,7 +120,7 @@ module elbeth_control_unit(
 
 	always @(*) begin
 		if( !id_except_from_decode ) begin
-			datapath[14:13] = (rst) ? 2'd0 : (exs_exception) ? 2'd2 : (id_branch_taken) ? 2'd1 : 2'b0; // Selecting exception pc
+			datapath[14:13] = (rst) ? 2'd0 : (exs_except) ? 2'd2 : (id_branch_taken) ? 2'd1 : 2'b0; // Selecting exception pc
 			datapath[12] = (rst) ? 1'd0 : (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs1
 			datapath[11] = (rst) ? 1'd0 : (id_match_forward_rs2) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs2
 		end // if( !id_except_from_decode )
