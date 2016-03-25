@@ -24,6 +24,6 @@ module elbeth_mux_2_to_1(
 	output [31:0]		mux_out
     );
 
-	assign mux_out = (bit_select) ? mux_in_1 : mux_in_2; 
+	assign mux_out = (bit_select) ? mux_in_2 : mux_in_1; 
 	 
 endmodule // elbeth_mux_2_to_1

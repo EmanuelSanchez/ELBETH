@@ -197,11 +197,16 @@ def compiler():
 	hex_f = asm_f[:-4]+".hex"
 	with open(asm_f, "r") as f:
 		with open(hex_f, "w") as new_f:
-			for i in range(0,127):
+			j=0
+			for i in range(0,128):
+				j+=1
 				new_f.write("00000000\n")
 			for line in f:
+				j+=1
 				print("\t"+line)
 				new_f.write(trans_line(line.split())+"\n")
+			for i in range (j, 256):
+				new_f.write("00000033\n")
 		new_f.close()
 	f.close()
 

@@ -25,10 +25,10 @@ module elbeth_mux_3_to_1(
 	output reg [31:0]		mux_out 
     );
 always @(*) begin	 
-					case (bit_select)
-							2'b00: begin mux_out = mux_in_1; end
-							2'b01: begin mux_out = mux_in_2; end
-							2'b10: begin mux_out = mux_in_3; end
-				   endcase 
-				end
+		case (bit_select)
+				2'b00: begin mux_out = mux_in_1; end
+				2'b01: begin mux_out = mux_in_2; end
+				2'b10: begin mux_out = mux_in_3; end
+	   endcase 
+	end
 endmodule
