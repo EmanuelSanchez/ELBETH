@@ -74,15 +74,6 @@ def test_all():
 	rm(i)
 
 
-def run_module(args):
-    if args.list:
-        list_module_test()
-    elif args.all:
-        pytest.main(['-s', '-v', '-k', 'not test_core'])
-    else:
-        pytest.main(['-s', '-v', args.file])
-
-
 def run_simulation(args):
 	os.chdir(src)
 	if args.list:
