@@ -8,10 +8,11 @@
 
 import sys
 import os
+import shutil
 
 
 instructions_set = {
-	'nop'	: {'type_inst' : 'R'},
+	'nop'	: {},
 	'add' 	: {'type_inst' : 'R', 'funct3' : '000', 'funct7' : '0000000'},
 	'sub' 	: {'type_inst' : 'R', 'funct3' : '000', 'funct7' : '0100000'},
 	'addi'	: {'type_inst' : 'I', 'funct3' : '000'},
@@ -110,14 +111,16 @@ def imm_generate(imm_d, type_gen):
 	if((len(bin_imm)>12)&((type_gen == 0)|(type_gen == 1))):
 		print("\nError : immerdiate number is invalid\nAbort.")
 		sys.exit(1)
-	bin_imm_extended = '0'*(12-len(bin_imm))+bin_imm
 	if(type_gen==1):
+		bin_imm_extended = '0'*(12-len(bin_imm))+bin_imm
 		return bin_imm_extended[-12]+bin_imm_extended[-10:-4]+bin_imm_extended[-4:]+bin_imm_extended[-11]
 	elif(type_gen==2):
 		return '0'*(20-len(bin_imm))+bin_imm
 	elif(type_gen==3):
-		return bin_imm_extended[-20]+bin_imm_extended[-10:-1]+bin_imm_extended[-11]+bin_imm_extended[-19:-12]
+		bin_imm_extended = '0'*(20-len(bin_imm))+bin_imm
+		return bin_imm_extended[-20]+bin_imm_extended[-10:]+bin_imm_extended[-11]+bin_imm_extended[-19:-11]
 	else:
+		bin_imm_extended = '0'*(12-len(bin_imm))+bin_imm
 		return bin_imm_extended
 
 
@@ -131,6 +134,8 @@ def convert_hex(num_bin):
 	return num_hex
 
 def trans_line(instruc):
+	if(instruc[0]=="nop"):
+		return "00000033"
 	type_inst = instructions_set[instruc[0]]['type_inst']
 	if (type_inst == 'R'):
 		funct7 = instructions_set[instruc[0]]['funct7']
@@ -174,7 +179,7 @@ def trans_line(instruc):
 		print("\t"+inst_bin)
 		return convert_hex(inst_bin)
 	if ((type_inst == 'U_LUI')|(type_inst == 'U_AUIPC')):
-		imm = imm_generate(int(instruc[3]),2)
+		imm = imm_generate(int(instruc[2]),2)
 		rd = registers[instruc[1].strip(',')]
 		opcode = opcodes[type_inst]
 		inst_bin = imm + rd + opcode
@@ -182,7 +187,7 @@ def trans_line(instruc):
 		print("\t"+inst_bin)
 		return convert_hex(inst_bin)
 	if (type_inst == 'UJ_JAL'):
-		imm = imm_generate(int(instruc[3]),3)
+		imm = imm_generate(int(instruc[2]),3)
 		rd = registers[instruc[1].strip(',')]
 		opcode = opcodes[type_inst]
 		inst_bin = imm + rd + opcode
@@ -191,25 +196,42 @@ def trans_line(instruc):
 		return convert_hex(inst_bin)		
 
 
+def move_file(file):
+	os.chdir(os.getcwd()+"/../..")
+	root = os.getcwd()
+	dir_src = root + "/simulation/my_tests"
+	dir_dest = root + "/simulation/cosimulation/core"
+	shutil.copyfile(dir_src+"/"+file, dir_dest+"/"+"memory.hex")
+	os.remove(dir_src+"/"+file)
+
+
 def compiler():
 	print("Translating...\n")
+	os.chdir(os.getcwd()+"/../my_tests")
 	asm_f = check_arg()
 	hex_f = asm_f[:-4]+".hex"
 	with open(asm_f, "r") as f:
 		with open(hex_f, "w") as new_f:
 			j=0
+			k=0
 			for i in range(0,128):
 				j+=1
 				new_f.write("00000000\n")
 			for line in f:
 				j+=1
+				print("   ",hex(128+384+4*k),":")
 				print("\t"+line)
+				k+=1
 				new_f.write(trans_line(line.split())+"\n")
-			for i in range (j, 256):
+			for i in range (j, 2**12):
 				new_f.write("00000033\n")
 		new_f.close()
+	move_file(hex_f)
+	if(sys.argv[2]=="1"):
+		os.chdir(os.getcwd()+"/simulation/scripts")
+		os.system("./testcore.py memory.hex")
 	f.close()
 
 if __name__ == '__main__':
     compiler()
-    print("Done.")
+    print("Translated.")

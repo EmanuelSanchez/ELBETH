@@ -5,56 +5,62 @@
 #---------------------------------------------------------------------------------------
     
 import os
-import random
-from myhdl import Cosimulation, Simulation, Signal, delay, now, StopSimulation, instance, always_comb, always, modbv
+from myhdl import Cosimulation
+from myhdl import Simulation
+from myhdl import Signal
+from myhdl import delay
+from myhdl import now
+from myhdl import StopSimulation
+from myhdl import instance
+from myhdl import always_comb
+from myhdl import always
+from myhdl import modbv
+from myhdl import Error
 
-#imem_en, imem_ready, imem_addr, imem_out_data, dmem_en, dmem_ready, dmem_rw, dmem_addr, dmem_out_data
-#, imem_en=imem_en, imem_ready=imem_ready, imem_addr=imem_ready, imem_out_data=imem_out_data, dmem_en=dmem_en, dmem_ready=dmem_ready, dmem_rw=dmem_rw, dmem_addr=dmem_addr, dmem_out_data=dmem_out_data
+TICK_PERIOD = 10
+TIMEOUT = 10000
 
-def core_compilation(file_mem, clk, rst, imem_addr, imem_out_data, toHost):
-	''' A Cosimulation object, used to simulate Verilog modules '''
-	os.system('iverilog -o core elbeth_memory.v core_top.v elbeth_core.v')
-	return Cosimulation('vvp -m ./myhdl.vpi core', clk=clk, rst=rst, imem_addr=imem_addr, imem_out_data=imem_out_data, toHost=toHost)
+def test_bench():
+	
+	clk = Signal(0)
+	rst = Signal(False)
+	imem_addr = Signal(modbv(0)[12:])
+	imem_out_data = Signal(modbv(0)[32:])
+	toHost = Signal(modbv(0)[32:])
 
-def clk_driver(clk, period=10):
-	''' Clock driver '''
-	@always(delay(period//2))
-	def driver():
+	def core_compilation(clk, rst, imem_addr, imem_out_data, toHost):
+		''' A Cosimulation object, used to simulate Verilog modules '''
+		os.system('iverilog -o core core_top.v elbeth_core.v elbeth_memory.v')
+		return Cosimulation('vvp -m ./myhdl.vpi core', clk=clk, rst=rst, imem_addr=imem_addr, imem_out_data=imem_out_data, toHost=toHost)
+
+	@always(delay(int(TICK_PERIOD / 2)))
+	def gen_clock():
 		clk.next = not clk
 
-	return driver
-
-
-def test_bench(rst):
-	"""
-	Testbech for the ALU module
-	"""
+	@always(toHost)
+	def toHost_check():
+		if toHost != 1:
+			raise Error('Test failed. MTOHOST = {0}. Time = {1}'.format(toHost, now()))
+		raise StopSimulation
 
 	@instance
-	def stimulus():
-		yield delay(5)
-		rst.next = True 
-		yield delay(10)
-		rst.next = False 
+	def timeout():
+		rst.next = True
+		yield delay(5 * TICK_PERIOD)
+		rst.next = False
+		yield delay(TIMEOUT * TICK_PERIOD)
+		raise Error("Test failed: Timeout")
 
-	return stimulus
+	return gen_clock, timeout, toHost_check, core_compilation(clk, rst, imem_addr, imem_out_data, toHost)
 
 
 def test_core():
 	"""
-	ALU: Test behavioral.
+	Core: Behavioral test for the RISCV core.
 	"""
-	clk = Signal(0)
-	rst = Signal(False)
-	imem_addr = Signal(modbv(0)[8:])
-	imem_out_data = Signal(modbv(0)[32:])
-	toHost = Signal(modbv(0)[32:])
-	clk_generator = clk_driver(clk)
-	test_bench_inst = test_bench(rst)
-	file_mem='memory_hex1.txt'
-	core_compilation_inst = core_compilation(file_mem, clk, rst, imem_addr, imem_out_data, toHost)
-	print(toHost)
-	sim = Simulation(clk_generator, test_bench_inst, core_compilation_inst)
-	sim.run(100)
+	sim = Simulation(test_bench())
+	sim.run()
 
-test_core()
+
+if __name__ == '__main__':
+	test_core()

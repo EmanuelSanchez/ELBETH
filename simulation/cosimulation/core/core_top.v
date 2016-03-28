@@ -4,14 +4,14 @@ module core_top();
 	reg				clk=0;
 	wire [31:0]		imem_in_data;
 	wire 			imem_ready;
-	wire [7:0]		imem_addr;
+	wire [11:0]		imem_addr;
 	wire			imem_en;
 	wire [3:0]		imem_rw;
 	wire [31:0]		imem_out_data;
 	//Data memory
 	wire [31:0]		dmem_in_data;
 	wire			dmem_ready;
-	wire [7:0]		dmem_addr;
+	wire [11:0]		dmem_addr;
 	wire			dmem_en;
 	wire [3:0]		dmem_rw;
 	wire [31:0]		dmem_out_data;
