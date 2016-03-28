@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : pc_registrer.v
 //  Created On    : Tue Jan  19 06:40:00 2016
-//  Last Modified : 2016-03-18 12:25:46
+//  Last Modified : 2016-03-26 00:42:10
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth 
 //  Company       : Universidad Simón Bolívar
@@ -16,6 +16,7 @@ module elbeth_pc_register(
 	input						clk,
 	input						rst,
 	input						ctrl_stall,
+	input 						ctrl_flush,
     input [31:0] 				next_pc,
     output reg [31:0]	 		pc
     );

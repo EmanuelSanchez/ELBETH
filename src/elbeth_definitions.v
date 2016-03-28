@@ -1,7 +1,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-03-17 23:24:15
+//  Last Modified : 2016-03-26 20:43:54
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -69,8 +69,8 @@
 //		5	:	id_mem_en						Data Memory enable
 //		4	:	id_data_size_mem 				Size of bytes to read o write: 	(0000) Write enable = 0
 //		3	:	.																				(0001) byte & Write enable = 1
-//		2	:	.																				(0010) halfword & Write enable = 1
-//		1	:	.																				(1000) word &	Write enable = 1
+//		2	:	.																				(0011) halfword & Write enable = 1
+//		1	:	.																				(1111) word &	Write enable = 1
 //		0	:	id_data_sign_mem		 		Unsigned/Signed data memory
 //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -82,8 +82,8 @@
 `define I_LOADS_UB_CTRL_VECTOR		13'b01011100000
 `define I_LOADS_UH_CTRL_VECTOR		13'b01011100000
 `define I_JALR_CTRL_VECTOR			13'b110010xxxxx
-`define S_W_CTRL_VECTOR				13'b01xx011000x
-`define S_H_CTRL_VECTOR				13'b01xx010010x
+`define S_W_CTRL_VECTOR				13'b01xx011111x
+`define S_H_CTRL_VECTOR				13'b01xx010011x
 `define S_B_CTRL_VECTOR				13'b01xx010001x
 `define SB_CTRL_VECTOR				13'bxxxx00xxxxx
 `define U_LUI_CTRL_VECTOR			13'b110010xxxxx			//revisar

@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : memory.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-17 22:52:12
+//  Last Modified : 2016-03-27 23:47:23
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -15,7 +15,7 @@
 `include "elbeth_definitions.v"
 
 module elbeth_memory #(
-	parameter AW = 8,						// Memory address width
+	parameter AW = 12,						// Memory address width
 	parameter DW = 32,						// Memory data width
     parameter FILE_MEM = "memory.hex"
 	)(   

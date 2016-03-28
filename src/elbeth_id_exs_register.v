@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : id_exs_register.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-17 10:55:27
+//  Last Modified : 2016-03-26 21:46:56
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -29,6 +29,7 @@ module elbeth_id_exs_register(
 	input					id_ctrl_reg_w,
 	input					id_ctrl_mem_en,
 	input [3:0]				id_ctrl_mem_rw,
+	input [3:0] 			id_data_size,
 	input					id_data_sign_mem,
 	input					id_exception,
 	input [3:0]				id_except_src,
@@ -48,6 +49,7 @@ module elbeth_id_exs_register(
 	output reg				exs_ctrl_reg_w,
 	output reg				exs_ctrl_mem_en,
 	output reg [3:0]		exs_ctrl_mem_rw,
+	output reg [3:0] 		exs_data_size,
 	output reg				exs_data_sign_mem,
 	output reg 				exs_exception,
 	output reg [3:0]		exs_except_src,
@@ -71,6 +73,7 @@ module elbeth_id_exs_register(
 		exs_ctrl_mem_rw <= (rst | ctrl_flush) ? 4'b0 : (ctrl_stall) ? exs_ctrl_mem_rw : id_ctrl_mem_rw;
 		exs_ctrl_reg_w <= (rst | ctrl_flush) ? 1'b0 : (ctrl_stall) ? exs_ctrl_reg_w : id_ctrl_reg_w;
 		exs_ctrl_mem_rw <= (rst | ctrl_flush) ? 4'b0 : (ctrl_stall) ? exs_ctrl_mem_rw : id_ctrl_mem_rw;
+		exs_data_size <= (rst | ctrl_flush) ? 4'b0 : (ctrl_stall) ? exs_data_size : id_data_size;
 		exs_data_sign_mem <= (rst | ctrl_flush) ? 1'b0 : (ctrl_stall) ? exs_data_sign_mem : id_data_sign_mem;
 		exs_exception <= (rst | ctrl_flush) ? 1'b0 : (ctrl_stall) ? exs_exception : id_exception;
 		exs_except_src <= (rst | ctrl_flush) ? 4'b0 : (ctrl_stall) ? exs_except_src : id_except_src;

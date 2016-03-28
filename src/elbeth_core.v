@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-18 00:05:27
+//  Last Modified : 2016-03-28 09:42:58
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -37,7 +37,7 @@ module elbeth_core(
 	input  [31:0]		 imem_in_data,		//instruction
 	input  				 imem_ready,
 	input 				 imem_error,
-	output [7:0]		 imem_addr,			//pc
+	output [11:0]		 imem_addr,			//pc
 	output 				 imem_en,
 	output [3:0]		 imem_rw,
 	output [31:0]		 imem_out_data,
@@ -46,7 +46,7 @@ module elbeth_core(
 	input  [31:0]		 dmem_in_data,
 	input 				 dmem_ready,
 	input 				 dmem_error,
-	output [7:0]		 dmem_addr,
+	output [11:0]		 dmem_addr,
 	output 				 dmem_en,
 	output [3:0]		 dmem_rw,
 	output [31:0]		 dmem_out_data
@@ -77,6 +77,7 @@ module elbeth_core(
 	 wire 	[31:0]		id_rs1_data;
 	 wire 	[31:0]		id_rs2_data;
 	 wire 	[3:0] 		id_mem_rw;
+	 wire 	[3:0]		id_data_size;
 	 wire 	[2:0]		id_csr_cmd;
 	 wire 	[11:0]		id_csr_addr;
 	 wire  	[1:0] 		id_data_w_gpr_select;
@@ -110,6 +111,7 @@ module elbeth_core(
 	 wire 	[3:0] 		exs_except_src_from_id;
 	 wire 	[3:0] 		exs_except_src;
 	 wire  	[1:0] 		exs_data_w_gpr_select;
+	 wire 				exs_exception;
 	//Wires to data memory
 	 wire	[31:0]		exs_data_memory_out;
 	 wire	[3:0]		exs_mem_rw;
@@ -122,7 +124,6 @@ module elbeth_core(
 	 wire [31:0]		exs_csr_wdata;
 	 wire [1:0] 		csr_prv;
 
-	 assign exs_data_size = exs_mem_rw;
 	//Instruction segmentation
 	 assign opcode = id_instruction[6:0];
 	 assign inst_0 = id_instruction[11:7];
@@ -133,6 +134,7 @@ module elbeth_core(
 	//Registeer file enable
 	 assign reg_file_w_en = (!id_stall) & exs_gpr_w;
 	 
+	 assign exs_exception = exs_csr_exception | except_illegal_acces;
 //--------------------------------------------------------------------------
 // IF stage
 //--------------------------------------------------------------------------
@@ -185,6 +187,7 @@ module elbeth_core(
 		.bmem_ready(dmem_ready),
 		.bmem_error(dmem_error),
 		//Processor instruction memory
+		.imem_en(if_mem_en),
 		.imem_addr(if_pc),
 		.imem_in_data(if_instruction),
 		.imem_ready(id_imem_ready),
@@ -241,6 +244,7 @@ module elbeth_core(
 		 .id_rd_addr(id_rd_addr), 
 		 .id_imm_shamt(id_imm_shamt), 
 		 .id_op_alu(id_op_alu),
+		 .id_data_size(id_data_size),
 		 .id_illegal_instruction(id_except_from_decode),
 		 .id_except_src(id_except_src_decode),
 		 .id_eret(id_eret),
@@ -332,7 +336,8 @@ module elbeth_core(
 		 .id_ctrl_data_w_reg_select(id_data_w_gpr_select), 
 		 .id_ctrl_reg_w(id_gpr_w),
 		 .id_ctrl_mem_en(id_mem_en), 
-		 .id_ctrl_mem_rw(id_mem_rw), 
+		 .id_ctrl_mem_rw(id_mem_rw),
+		 .id_data_size(id_data_size),
 		 .id_data_sign_mem(id_data_sign_mem),
 		 .id_exception(id_except_to_exs),
 		 .id_except_src(id_except_src),
@@ -354,6 +359,7 @@ module elbeth_core(
 		 .exs_ctrl_reg_w(exs_gpr_w), 
 		 .exs_ctrl_mem_en(exs_mem_en), 
 		 .exs_ctrl_mem_rw(exs_mem_rw), 
+		 .exs_data_size(exs_data_size),
 		 .exs_data_sign_mem(exs_data_sign_mem),
 		 .exs_exception(exs_except_from_id),
 		 .exs_except_src(exs_except_src_from_id),
@@ -454,6 +460,7 @@ module elbeth_core(
 	
 	elbeth_control_unit control_unit(
 		 //Inputs
+		 .clk(clk),
 		 .rst(rst),
 		 .if_opcode(opcode),
 		 .if_funct3(inst_1),
@@ -472,6 +479,7 @@ module elbeth_core(
 		 .exs_except_from_mem(exs_except_from_mem),
 		 .except_illegal_acces(except_illegal_acces),
 		 //Out Control Signals
+		 .if_mem_en(if_mem_en),
 		 .if_stall(if_stall),
 		 .if_flush(if_flush),
 		 .if_pc_stall(if_pc_stall),

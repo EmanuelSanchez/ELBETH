@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_bridge_memory.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-16 13:41:28
+//  Last Modified : 2016-03-28 09:40:24
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -16,7 +16,7 @@
 module elbeth_bridge_memory(
 	//Memory port A
 	output 				 amem_en,
-	output [7:0]		 amem_addr,
+	output [11:0]		 amem_addr,
 	output [31:0]		 amem_out_data,
 	output [3:0]		 amem_rw,
 	input  [31:0]		 amem_in_data,
@@ -24,13 +24,14 @@ module elbeth_bridge_memory(
 	input				 amem_error,
 	//Memory port B
 	output 				 bmem_en,
-	output [7:0]		 bmem_addr,	
+	output [11:0]		 bmem_addr,	
 	output [31:0]		 bmem_out_data,	
 	output [3:0]		 bmem_rw,
 	input  [31:0]		 bmem_in_data,
 	input 				 bmem_ready,
 	input				 bmem_error,
 	//Processor instruction memory
+	input				 imem_en,
 	input  [31:0]		 imem_addr,
 	output [31:0]		 imem_in_data,
 	output 				 imem_ready,
@@ -52,8 +53,8 @@ module elbeth_bridge_memory(
 	assign imem_in_data = amem_in_data;
 	assign imem_ready = amem_ready;
 
-	assign amem_addr = (!imem_except) ? imem_addr[9:2] : 8'bx;
-	assign amem_en= 1'b1;
+	assign amem_addr = (!imem_except) ? imem_addr[16:2] : 8'bx;
+	assign amem_en= imem_en & ~amem_error;
 	assign amem_rw = 4'b0;
 	assign amem_out_data = 31'bz;
 
@@ -67,17 +68,19 @@ module elbeth_bridge_memory(
 				else
 					dmem_except_src = `ECODE_STORE_AMO_ACCESS_FAULT;
 			end
-			else if(dmem_rw == 4'b0)
-				dmem_except_src = `ECODE_LOAD_ADDR_MISALIGNED;
-			else
-				dmem_except_src = `ECODE_STORE_AMO_ADDR_MISALIGNED;
+			else begin
+				if(dmem_rw == 4'b0)
+					dmem_except_src = `ECODE_LOAD_ADDR_MISALIGNED;
+				else
+					dmem_except_src = `ECODE_STORE_AMO_ADDR_MISALIGNED;
+			end
 		end		
 	end
 
 	assign dmem_in_data = bmem_in_data;
 	assign dmem_ready = bmem_ready;
 
-	assign bmem_addr = ((!dmem_except) & dmem_en) ? dmem_addr[9:2] : 8'bx;
+	assign bmem_addr = ((!dmem_except) & dmem_en) ? dmem_addr[16:2] : 8'bx;
 	assign bmem_en = dmem_en;
 	assign bmem_rw = dmem_rw;
 	assign bmem_out_data = dmem_out_data;
