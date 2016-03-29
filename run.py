@@ -54,6 +54,7 @@ def rm():
 	os.remove(src+'/myhdl.vpi')
 	os.remove('core.vcd')
 	os.remove('core')
+	os.remove('log')
 
 def test_all():
 	verify()
@@ -80,25 +81,43 @@ def run_simulation(args):
 		list_module_test()
 	elif args.step:
 		mv_utils()
-		i=0
 		for test in list_tests:
 			mv_test(test)
 			print("------------------------------------------------------------")
 			print("\tRunning:  " +test)
 			print("------------------------------------------------------------")
-			pytest.main(['-v', '--tb=line', src+'/core_test.py'])
+			pytest.main(['--resultlog=./log', '--tb=no', src+'/core_test.py'])
 			menu(test[:-4])
 		rm()
 	elif args.all:
 		mv_utils()
-		i=0
+		l = []
+		i = 0
+		j = 0
 		for test in list_tests:
 			mv_test(test)
-			print("------------------------------------------------------------")
-			print("\tRunning:  " +test)
-			print("------------------------------------------------------------")
-			pytest.main(['-v', '--tb=line', src+'/core_test.py'])
+			pytest.main(['--resultlog=./log', '--tb=no', src+'/core_test.py'])
+			with open('log', 'r') as f:
+				l1 = f.readline().split()
+				l2 = f.readline().split()
+
+				if len(test) < 16:  tab = '\t\t'
+				else:               tab = '\t'
+
+				if((l1[0] == '.') & ( l2[0]== '.')):
+					l.append(test + tab + '\033[92m' + 'OK' + '\033[0m')
+					i+=1
+				else:
+					l.append(test + tab + '\033[91m' + 'FAILED' + '\033[0m')
+					j+=1
+			f.close()
 		rm()
+		for item in l:
+			print (item)
+		print ("------------------------------------------------------------")
+		print ("\tRESUMEN:")
+		print ("\tTotal tests: {0}.\n\tFailed tests: {1}. \n\tSucces tests: {2}.").format(i+j,j,i)
+		print ("------------------------------------------------------------")
 	else:
 		mv_utils()
 		mv_test(args.file)
@@ -150,6 +169,7 @@ def menu(test,ext='.dump'):
 		return
 	else:
 		print("\tError: option incorrect.\n\tAbort.")
+		rm()
 		sys.exit(1)
 
 
