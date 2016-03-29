@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_control_unit.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-28 10:08:54
+//  Last Modified : 2016-03-29 02:17:08
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -31,6 +31,7 @@ module elbeth_control_unit(
 	input 							exs_except_from_id,
 	input 							exs_except_from_mem,
 	input 							except_illegal_acces,
+	input 							exs_eret,
 	output							if_pc_stall,
 	output 	[1:0]					if_pc_select, 			// Datapath signals
 	output							if_stall,				// Stall signals 
@@ -54,63 +55,38 @@ module elbeth_control_unit(
 	output							exs_except_src_select,
 	output							exs_retire
     );
-	
-	reg 				if_flushed; 					// QUITAR!!!
-	reg 				if_imem_internal;
 
 	wire 				imem_request_stall;
 	wire 				dmem_request_stall;
 	wire 	[3:0]		id_data_size_mem;
-	reg 				id_branch_taken_internal;
+	reg 				eret_internal;
 
 	wire 				id_except;
 	wire 				exs_except;
 
 	reg		[14:0]		 datapath;
 
+	always @(posedge clk) begin
+		if(eret_internal) begin
+			 eret_internal <= 0;
+		end else begin
+			 eret_internal <= exs_eret;
+		end
+	end
+
 	assign	imem_request_stall = (if_imem_en & ~if_imem_ready);
-	//assign	imem_request_stall = (if_imem_en & ~if_imem_ready) | if_imem_internal;		// Need stall if the memory is enabled and the ready signal is dowm
-	assign	dmem_request_stall = exs_dmem_en & ~exs_dmem_ready;		// .	
+	assign	dmem_request_stall = exs_dmem_en & ~exs_dmem_ready;
 	assign  id_except = id_except_from_if | id_except_from_decode;
 	assign  exs_except = exs_except_from_id | exs_except_from_mem | except_illegal_acces;
-/*
-	always @(posedge clk) begin
-		if(id_branch_taken_internal) begin
-			id_branch_taken_internal = 1'b0; end
-		else
-			id_branch_taken_internal = id_branch_taken;
-	end
-*/
-///*	
-	always @(posedge clk) begin
-		id_branch_taken_internal = 0;				// Quitar, sólo mientras que arreglo memoria de instrucciones asincrona
-	end
-//*/
-///*
-	always @(posedge clk) begin
-		if(if_flushed) begin			// Quitar, sólo mientras que arreglo memoria de instrucciones asincrona
-			if_flushed = 1'b0; end
-		else
-			if_flushed = if_flush;
-	end
-//*/
-/*
-	always @(posedge clk) begin
-		if(if_imem_ready)
-			if_imem_internal <= ~if_imem_internal;
-		else
-			if_imem_internal <= 1'b1;
-	end
-*/
 
 	//Other control signals
-	assign	if_pc_stall = imem_request_stall | dmem_request_stall; 						//OJO
-	assign	if_stall = (rst) ? 1'b1 : imem_request_stall | dmem_request_stall;
-	assign 	if_flush = (rst) ? 1'b0 : id_branch_taken | exs_except | id_branch_taken_internal;
-	assign	id_stall = (rst) ? 1'b1 : dmem_request_stall;
-	assign  id_mem_rw = id_data_size_mem;							//
-	assign 	id_except_src_select = (id_except_from_if) ? 1'b0 : 1'b1;			//
-	assign  id_flush = (rst) ? 1'b0 : exs_except;								//	
+	assign	if_pc_stall = dmem_request_stall | (imem_request_stall & (!exs_eret)) | eret_internal;
+	assign	if_stall = (rst) ? 1'b1 : dmem_request_stall | (imem_request_stall & (!exs_eret)) | eret_internal;
+	assign 	if_flush = (rst) ? 1'b0 : id_branch_taken | exs_except | exs_eret;
+	assign	id_stall = (rst) ? 1'b1 : dmem_request_stall | (imem_request_stall & (!exs_eret)) | eret_internal;
+	assign  id_mem_rw = id_data_size_mem;
+	assign 	id_except_src_select = (id_except_from_if) ? 1'b0 : 1'b1;
+	assign  id_flush = (rst) ? 1'b0 : exs_except | exs_eret;
 	assign 	id_exception = id_except;
 	assign 	exs_csr_imm_select = exs_funct3[2];
 	assign  exs_retire = !(exs_exception | id_stall | id_flush);
@@ -140,7 +116,7 @@ module elbeth_control_unit(
 //		0	:	id_data_sign_mem		 		Unsigned/Signed data memory
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	assign	if_pc_select 			= datapath[14:13];
+	assign	if_pc_select			= datapath[14:13];
 	assign	id_rs1_select 			= datapath[12];
 	assign	id_rs2_select 		 	= datapath[11];
 	assign	id_alu_port_a_select 	= datapath[10];
@@ -157,9 +133,10 @@ module elbeth_control_unit(
 
 	always @(*) begin
 		if( !id_except_from_decode ) begin
-			datapath[14:13] = (rst) ? 2'd0 : (exs_except) ? 2'd2 : (id_branch_taken) ? 2'd1 : 2'b0; // Selecting exception pc
-			datapath[12] = (rst) ? 1'd0 : (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs1
-			datapath[11] = (rst) ? 1'd0 : (id_match_forward_rs2) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs2
+			datapath[14] <= (rst) ? 1'd0 : (exs_except) ? 1'b1 : (exs_eret) ? 1'b1 : (id_branch_taken) ? 1'b0 : 1'b0; // Selecting exception pc
+			datapath[13] <= (rst) ? 1'd0 : (exs_except) ? 1'b0 : (exs_eret) ? 1'b1 : (id_branch_taken) ? 1'b1 : 1'b0; // Selecting exception pc
+			datapath[12] <= (rst) ? 1'd0 : (id_match_forward_rs1) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs1
+			datapath[11] <= (rst) ? 1'd0 : (id_match_forward_rs2) ? 1'b1 : 1'b0;		 				// Selecting forwarding or rs2
 		end // if( !id_except_from_decode )
 		else
 			datapath[14:11] = 4'b0;
@@ -193,6 +170,7 @@ module elbeth_control_unit(
 						`OP_TYPE_U_LUI :   begin datapath[10:0] = `U_LUI_CTRL_VECTOR; end
 						`OP_TYPE_U_AUIPC : begin datapath[10:0] = `U_AUIPC_CTRL_VECTOR; end
 						`OP_TYPE_UJ_JAL :  begin datapath[10:0] = `UJ_JAL_CTRL_VECTOR; end
+						`OP_FENCE : begin datapath[10:0] = `R_CTRL_VECTOR; end
 						`OP_TYPE_SYSTEM :  begin
 								case (if_funct3)
 										`F3_PRIV :	 begin datapath[10:0] = `CSR_PRV_CTRL_VECTOR; end

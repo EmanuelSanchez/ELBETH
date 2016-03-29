@@ -40,7 +40,7 @@ module elbeth_branch_unit(
 	always @(*) begin
 		case (operation)
 				`OP_JAL	:	begin 
-						pc_branch = id_pc + $signed(offset); 
+						pc_branch = (id_pc + $signed(offset));
 						branch_taken = 1'b1;
 				end
 				`OP_JALR :	begin 

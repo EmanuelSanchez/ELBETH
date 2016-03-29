@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_csr_register.v
 //  Created On    : Mon Feb  22 08:51:00 2016
-//  Last Modified : 2016-03-18 00:52:16
+//  Last Modified : 2016-03-28 23:11:26
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -239,7 +239,7 @@ module elbeth_csr_register(
       if (exception | interrupt_taken)
         mepc <= (exception_pc & (~3));
       if (wen_internal & addr == `CSR_ADDR_MEPC)
-        mepc <= (exception_pc & (~3));
+        mepc <= (wdata_internal & (~3));
    end
 
 	// Read CSR registers.

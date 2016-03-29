@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-28 09:42:58
+//  Last Modified : 2016-03-29 02:35:02
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -245,7 +245,7 @@ module elbeth_core(
 		 .id_imm_shamt(id_imm_shamt), 
 		 .id_op_alu(id_op_alu),
 		 .id_data_size(id_data_size),
-		 .id_illegal_instruction(id_except_from_decode),
+		 .id_except(id_except_from_decode),
 		 .id_except_src(id_except_src_decode),
 		 .id_eret(id_eret),
 		 .csr_cmd(id_csr_cmd),
@@ -478,6 +478,7 @@ module elbeth_core(
 		 .exs_except_from_id(exs_except_from_id),
 		 .exs_except_from_mem(exs_except_from_mem),
 		 .except_illegal_acces(except_illegal_acces),
+		 .exs_eret(exs_eret),
 		 //Out Control Signals
 		 .if_mem_en(if_mem_en),
 		 .if_stall(if_stall),

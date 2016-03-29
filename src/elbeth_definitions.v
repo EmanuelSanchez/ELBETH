@@ -1,7 +1,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-03-26 20:43:54
+//  Last Modified : 2016-03-29 02:13:40
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -30,7 +30,8 @@
 `define OP_TYPE_SB          7'b1100011         
 `define OP_TYPE_I_LOADS     7'b0000011          
 `define OP_TYPE_S           7'b0100011
-`define OP_TYPE_SYSTEM		7'b1110011          
+`define OP_TYPE_SYSTEM		7'b1110011  
+`define OP_FENCE			7'b0001111        
 
 //--------------------------------------------------------------------------
 // PRIV Funct3
@@ -74,24 +75,24 @@
 //		0	:	id_data_sign_mem		 		Unsigned/Signed data memory
 //---------------------------------------------------------------------------------------------------------------------------------
 
-`define R_CTRL_VECTOR				13'b000010xxxxx
-`define I_CTRL_VECTOR				13'b010010xxxxx
-`define I_LOADS_B_CTRL_VECTOR		13'b01011100001
-`define I_LOADS_H_CTRL_VECTOR		13'b01011100001
-`define I_LOADS_W_CTRL_VECTOR		13'b01011100001
-`define I_LOADS_UB_CTRL_VECTOR		13'b01011100000
-`define I_LOADS_UH_CTRL_VECTOR		13'b01011100000
-`define I_JALR_CTRL_VECTOR			13'b110010xxxxx
-`define S_W_CTRL_VECTOR				13'b01xx011111x
-`define S_H_CTRL_VECTOR				13'b01xx010011x
-`define S_B_CTRL_VECTOR				13'b01xx010001x
-`define SB_CTRL_VECTOR				13'bxxxx00xxxxx
-`define U_LUI_CTRL_VECTOR			13'b110010xxxxx			//revisar
-`define U_AUIPC_CTRL_VECTOR			13'b110010xxxxx			//revisar
-`define UJ_JAL_CTRL_VECTOR			13'b11xx00xxxxx			//revisar 
-`define CSR_PRV_CTRL_VECTOR			13'bxxxxxxxxxxx
-`define CSR_CMD_CTRL_VECTOR 		13'b001010xxxxx
-`define CSR_CMDI_CTRL_VECTOR		13'b011010xxxxx
+`define R_CTRL_VECTOR				11'b000010xxxxx
+`define I_CTRL_VECTOR				11'b010010xxxxx
+`define I_LOADS_B_CTRL_VECTOR		11'b01011100001
+`define I_LOADS_H_CTRL_VECTOR		11'b01011100001
+`define I_LOADS_W_CTRL_VECTOR		11'b01011100001
+`define I_LOADS_UB_CTRL_VECTOR		11'b01011100000
+`define I_LOADS_UH_CTRL_VECTOR		11'b01011100000
+`define I_JALR_CTRL_VECTOR			11'b110010xxxxx
+`define S_W_CTRL_VECTOR				11'b01xx011111x
+`define S_H_CTRL_VECTOR				11'b01xx010011x
+`define S_B_CTRL_VECTOR				11'b01xx010001x
+`define SB_CTRL_VECTOR				11'bxxxx00xxxxx
+`define U_LUI_CTRL_VECTOR			11'b010010xxxxx
+`define U_AUIPC_CTRL_VECTOR			11'b110010xxxxx
+`define UJ_JAL_CTRL_VECTOR			11'b110010xxxxx
+`define CSR_PRV_CTRL_VECTOR			11'bxxxx00xxxxx
+`define CSR_CMD_CTRL_VECTOR 		11'b001010xxxxx
+`define CSR_CMDI_CTRL_VECTOR		11'b011010xxxxx
 
 //--------------------------------------------------------------------------
 // ALU operations
