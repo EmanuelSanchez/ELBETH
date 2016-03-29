@@ -43,7 +43,7 @@ def mv_test (test_name):
 	try:
 		shutil.copyfile(test, dest)
 	except:
-		print('Imposible to found test:'+list_tests[i])
+		print('Imposible to found test:'+test_name)
 		sys.exit(1)
 
 def rm():
@@ -86,7 +86,7 @@ def run_simulation(args):
 			print("------------------------------------------------------------")
 			print("\tRunning:  " +test)
 			print("------------------------------------------------------------")
-			pytest.main([src+'/core_test.py'])
+			pytest.main(['-v', '--tb=line', src+'/core_test.py'])
 			menu(test[:-4])
 		rm()
 	elif args.all:
@@ -97,7 +97,7 @@ def run_simulation(args):
 			print("------------------------------------------------------------")
 			print("\tRunning:  " +test)
 			print("------------------------------------------------------------")
-			pytest.main([src+'/core_test.py'])
+			pytest.main(['-v', '--tb=line', src+'/core_test.py'])
 		rm()
 	else:
 		mv_utils()
