@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_control_unit.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-29 22:18:16
+//  Last Modified : 2016-03-30 08:34:31
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -26,10 +26,13 @@ module elbeth_control_unit(
 	input							id_branch_taken,		// Branch unit signals
 	input 							id_except_from_if,
 	input 							id_except_from_decode,
+	input 	[3:0]					id_except_src_if,
 	input							exs_dmem_ready,			// Data memory signals
 	input							exs_dmem_en,			// .
 	input 							exs_except_from_id,
 	input 							exs_except_from_mem,
+	input 	[3:0]					exs_except_src_id,
+	input 	[3:0]					exs_except_src_mem,
 	input 							except_illegal_acces,
 	input 							exs_eret,
 	output							if_pc_stall,
@@ -48,10 +51,10 @@ module elbeth_control_unit(
 	output 							id_mem_en,				// .
 	output 							id_mem_rw,
 	output							id_exception,
-	output							id_except_src_select,
+	output reg [3:0]				id_exception_src,
 	output							exs_csr_imm_select,
 	output 							exs_exception,
-	output							exs_except_src_select,
+	output reg [3:0]				exs_exception_src,
 	output							exs_retire
     );
 
@@ -82,7 +85,7 @@ module elbeth_control_unit(
 	assign	if_stall = (rst) ? 1'b1 : dmem_request_stall | (imem_request_stall & (!exs_eret)) | eret_internal;
 	assign 	if_flush = (rst) ? 1'b0 : id_branch_taken | exs_except | exs_eret;
 	assign	id_stall = (rst) ? 1'b1 : dmem_request_stall | (imem_request_stall & (!exs_eret)) | eret_internal;
-	assign 	id_except_src_select = (id_except_from_if) ? 1'b0 : 1'b1;
+	//assign 	id_except_src_select = (id_except_from_if) ? 1'b0 : 1'b1;
 	assign  id_flush = (rst) ? 1'b0 : exs_except | exs_eret;
 	assign 	id_exception = id_except;
 	assign 	exs_csr_imm_select = exs_funct3[2];
@@ -90,6 +93,31 @@ module elbeth_control_unit(
 	assign  exs_except_src_select = (exs_except_from_id) ? 1'b0 : 1'b1;
 	assign 	exs_exception = exs_except;
 	assign  if_mem_en = (~rst & ~if_imem_ready & ~exs_except);
+
+	//ID source exception
+	always @(*) begin
+		id_exception_src = 4'b0;
+		if(id_except_from_decode) begin
+			 id_exception_src = `ECODE_ILLEGAL_INST;
+		end // if(id_except_from_decode)
+		else if(id_except_from_if) begin
+			 id_exception_src = id_except_src_if;
+		end // else if(id_except_from_if)
+	end // always @(*)
+
+	//EXS source exception
+	always @(*) begin
+		exs_exception_src = 4'b0;
+		if(exs_except_from_id) begin
+			 exs_exception_src = exs_except_src_id;
+		end // if(exs_except_from_id)
+		else if(exs_except_from_mem) begin
+			 exs_exception_src = exs_except_src_mem;
+		end // else if(exs_except_from_mem)
+		else if(except_illegal_acces) begin
+			 exs_exception_src = `ECODE_ILLEGAL_INST;
+		end // else if(except_illegal_acces)
+	end // always @(*)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Control Vectors

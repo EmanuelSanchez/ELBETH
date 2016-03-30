@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-29 22:53:39
+//  Last Modified : 2016-03-30 09:07:54
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -27,7 +27,6 @@
 `include "elbeth_alu.v"
 `include "elbeth_csr_register.v"
 `include "elbeth_bridge_memory.v"
-`include "elbeth_mux4b_2_to_1.v"
 
 module elbeth_core(
     input			 	 clk,
@@ -285,16 +284,6 @@ module elbeth_core(
 		 .branch_taken(branch_taken)
 		 );
 
-	elbeth_mux4b_2_to_1 id_except_src_select (
-		 //Inputs
-		 .mux_in_1(id_except_src_from_if),
-		 .mux_in_2(id_except_src_decode),
-		 //In Control Signals
-		 .bit_select(id_except_src_select),
-		 //Outputs
-		 .mux_out(id_except_src)
-		 );
-
 	elbeth_mux_2_to_1 rs1_select (
 		 //Inputs
 		 .mux_in_1(id_rs1_data_gpr), 
@@ -408,16 +397,6 @@ module elbeth_core(
 		 .mux_out(exs_rd_data)
 		 );
 
-	elbeth_mux4b_2_to_1 exs_except_src_select (
-		 //Inputs
-		 .mux_in_1(exs_except_src_from_id),
-		 .mux_in_2(exs_except_src_from_mem),
-		 //In Control Signals
-		 .bit_select(exs_except_src_select), 
-		 //Outputs
-		 .mux_out(exs_except_src)
-		 );
-
 	elbeth_csr_register csr(
 		 //Inputs
 		 .clk(clk),
@@ -459,10 +438,13 @@ module elbeth_core(
 		 .id_branch_taken(branch_taken),
 		 .id_except_from_if(id_except_from_if),
 		 .id_except_from_decode(id_except_from_decode),
+		 .id_except_src_if(id_except_src_from_if),
 		 .exs_dmem_ready(exs_dmem_ready),
 		 .exs_dmem_en(dmem_en),
 		 .exs_except_from_id(exs_except_from_id),
 		 .exs_except_from_mem(exs_except_from_mem),
+		 .exs_except_src_id(exs_except_src_from_id),
+		 .exs_except_src_mem(exs_except_src_from_mem),
 		 .except_illegal_acces(except_illegal_acces),
 		 .exs_eret(exs_eret),
 		 //Out Control Signals
@@ -482,9 +464,9 @@ module elbeth_core(
 		 .id_mem_en(id_mem_en),
 		 .id_mem_rw(id_mem_rw),
 		 .id_exception(id_except_to_exs),
-		 .id_except_src_select(id_except_src_select),
+		 .id_exception_src(id_except_src),
 		 .exs_csr_imm_select(exs_csr_imm_select),
-		 .exs_except_src_select(exs_except_src_select),
+		 .exs_exception_src(exs_except_src),
 		 .exs_retire(exs_retire),
 		 .exs_exception(exs_csr_exception)
 		 );
