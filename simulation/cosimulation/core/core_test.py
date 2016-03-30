@@ -24,7 +24,7 @@ def test_bench():
 	
 	clk = Signal(0)
 	rst = Signal(False)
-	imem_addr = Signal(modbv(0)[12:])
+	imem_addr = Signal(modbv(0)[14:])
 	imem_out_data = Signal(modbv(0)[32:])
 	toHost = Signal(modbv(0)[32:])
 
