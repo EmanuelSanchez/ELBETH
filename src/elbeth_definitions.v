@@ -1,7 +1,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-03-29 21:33:18
+//  Last Modified : 2016-03-30 15:35:55
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -31,7 +31,9 @@
 `define OP_TYPE_I_LOADS     7'b0000011          
 `define OP_TYPE_S           7'b0100011
 `define OP_TYPE_SYSTEM		7'b1110011  
-`define OP_FENCE			7'b0001111        
+`define OP_FENCE			7'b0001111
+`define OP_MULT			    7'b0110011 
+
 
 //--------------------------------------------------------------------------
 // PRIV Funct3
