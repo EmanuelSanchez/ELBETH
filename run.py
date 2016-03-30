@@ -112,6 +112,9 @@ def run_simulation(args):
 					j+=1
 			f.close()
 		rm()
+		print("-------------------------------------------------------------")
+		print("\tSIMULATION RESULTS:")
+		print("-------------------------------------------------------------")
 		for item in l:
 			print (item)
 		print ("------------------------------------------------------------")
@@ -152,7 +155,6 @@ def menu(test,ext='.dump'):
 	print("  \t4 - To Open test and simulation")
 	opt = input("\n\tSelect:   ")
 	if(opt==0):
-		rm()
 		sys.exit(1)
 	elif(opt==1):
 		return
