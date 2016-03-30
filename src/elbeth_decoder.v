@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_decoder.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-29 23:29:39
+//  Last Modified : 2016-03-30 15:36:35
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -34,7 +34,8 @@ module elbeth_decoder(
     output	   [3:0] 			id_except_src,
     output reg [2:0]			csr_cmd,
     output reg [11:0]			csr_addr,
-    output reg 					id_eret
+    output reg 					id_eret,
+    output reg 					mult_select	
     );
 
 	wire 	[4:0]			rd;
@@ -66,10 +67,21 @@ module elbeth_decoder(
 		id_op_branch = 3'bx;
 		id_data_inf = 4'b0;
 		case (opcode)
+   				
+   				`OP_MULT:  begin
+   				 	      id_rd_addr <= rd;
+						  id_rs1_addr <= rs1;
+						  id_rs2_addr <= rs2;
+						  case (funct3)
+						  	3'd0:  mult_select=1'b0;
+						  	default : mult_select=1'b1;
+						  endcase
+   				         end 
 				`OP_TYPE_R :	begin
 						id_rd_addr <= rd;
 						id_rs1_addr <= rs1;
 						id_rs2_addr <= rs2;
+
 						case	(funct3)
 								3'd0 :	begin		id_op_alu = (funct7) ? `OP_SUB : `OP_ADD; end
 								3'd1 :	begin		id_op_alu = `OP_SLL; end
