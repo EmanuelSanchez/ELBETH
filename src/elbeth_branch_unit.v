@@ -44,7 +44,7 @@ module elbeth_branch_unit(
 						branch_taken = 1'b1;
 				end
 				`OP_JALR :	begin 
-						pc_branch = (id_data_rs1 + $signed(offset))&32'hFFFFFFF8; 
+						pc_branch = (id_data_rs1 + $signed(offset)); 
 						branch_taken = 1'b1;
 				end
 				`OP_BEQ  :	begin 

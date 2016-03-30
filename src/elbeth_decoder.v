@@ -2,7 +2,7 @@
 //==================================================================================================
 //  Filename      : elbeth_decoder.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-29 02:32:04
+//  Last Modified : 2016-03-29 23:29:39
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -29,7 +29,7 @@ module elbeth_decoder(
 	output reg [4:0] 			id_rd_addr,
 	output reg [31:0] 			id_imm_shamt,
     output reg [3:0] 			id_op_alu,
-    output reg [3:0]			id_data_size,
+    output reg [3:0]			id_data_inf,
     output	 					id_except,
     output	   [3:0] 			id_except_src,
     output reg [2:0]			csr_cmd,
@@ -53,8 +53,8 @@ module elbeth_decoder(
 	assign rs2 = inst_3;
 	assign funct7 = inst_4[5];
 	assign funct12 = {{inst_4[6:0]}, {inst_3[4:0]}};
-	assign id_except_src = (id_except) ? (illegal_instruction) ? `ECODE_ILLEGAL_INST : (`ECODE_ECALL_FROM_U + prv) : 4'd0;
-	assign id_except = (rst) ? 1'b0 : (illegal_instruction | ecall);
+	assign id_except = illegal_instruction | ecall;
+	assign id_except_src = (id_except) ? (illegal_instruction) ? `ECODE_ILLEGAL_INST : (`ECODE_ECALL_FROM_U + csr_prv) : 4'd0;
 
 	always @(*) begin
 		ecall = 1'b0;
@@ -64,7 +64,7 @@ module elbeth_decoder(
 		csr_cmd = 3'b0;
 		id_eret = 1'b0;
 		id_op_branch = 3'bx;
-		id_data_size = 4'b0;
+		id_data_inf = 4'b0;
 		case (opcode)
 				`OP_TYPE_R :	begin
 						id_rd_addr <= rd;
@@ -119,11 +119,11 @@ module elbeth_decoder(
 						id_imm_shamt <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:0]}};
 						id_op_alu <= `OP_ADD;
 						case	(funct3)
-								3'd0 : 	  begin id_data_size = `BYTE;	end
-								3'd1 :    begin id_data_size = `HALFWORD;	end
-								3'd2 :	  begin id_data_size = `WORD;	end
-								3'd4 :	  begin id_data_size = `BYTE;	end
-								3'd5 :	  begin id_data_size = `HALFWORD; end
+								3'd0 : 	  begin id_data_inf = `BYTE;	end
+								3'd1 :    begin id_data_inf = `HALFWORD;	end
+								3'd2 :	  begin id_data_inf = `WORD;	end
+								3'd4 :	  begin id_data_inf = `BYTE_UNSIGNED;	end
+								3'd5 :	  begin id_data_inf = `HALFWORD_UNSIGNED; end
 								default : illegal_instruction = 1'b1;
 						endcase
 				end
@@ -131,7 +131,7 @@ module elbeth_decoder(
 						id_rd_addr <= rd;
 						id_rs1_addr <= rs1;
 						id_imm_shamt <= { {29'd0}, {3'd4}};
-						id_offset_branch <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:0]}};
+						id_offset_branch <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_3[4:1]}, 1'b0};
 						id_op_alu <= `OP_ADD;
 						id_op_branch <= `OP_JALR;
 				end
@@ -140,6 +140,12 @@ module elbeth_decoder(
 						id_rs2_addr <= rs2;
 						id_imm_shamt <= { {21{inst_4[6]}}, {inst_4[5:0]}, {inst_0[4:0]}};
 						id_op_alu <= `OP_ADD;
+						case	(funct3)
+								3'd0 : 	  begin id_data_inf = `BYTE;	end
+								3'd1 :    begin id_data_inf = `HALFWORD;	end
+								3'd2 :	  begin id_data_inf = `WORD;	end
+								default : illegal_instruction = 1'b1;
+						endcase
 				end
 				`OP_TYPE_SB : begin
 						id_rs1_addr <= rs1;
@@ -169,7 +175,7 @@ module elbeth_decoder(
 				`OP_TYPE_UJ_JAL : begin
 						id_rd_addr <= rd;
 						id_imm_shamt <= { {29'd0}, {3'd4}};
-						id_offset_branch <= { {12{inst_4[6]}}, {inst_2[4:0]}, {inst_1[2:0]}, {inst_4[5:0]}, {inst_3[4:1]}, {1'b0}};							
+						id_offset_branch <= { {12{inst_4[6]}}, {inst_2[4:0]}, {inst_1[2:0]}, {inst_3[0]}, {inst_4[5:0]}, {inst_3[4:1]}, {1'b0}};							
 						id_op_alu <= `OP_ADD;
 						id_op_branch <= `OP_JAL;
 				end

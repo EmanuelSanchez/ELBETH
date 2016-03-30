@@ -1,7 +1,7 @@
 //==================================================================================================
 //  Filename      : elbeth_defines.v
 //  Created On    : Mon Aug 31 19:32:04 2015
-//  Last Modified : 2016-03-29 02:13:40
+//  Last Modified : 2016-03-29 21:33:18
 //  Revision      : 0.1
 //  Author        : NINISBETH SEGOVIA Y EMANUEL SANCHEZ
 //  Company       : Universidad Simón Bolívar
@@ -58,41 +58,37 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 //   Bit     Name                		Description
 //----------------------------------------------------------------------------------------------------------------------------------
-//		14	:	if_pc_select					Select: (0) pc + 4, (1)	branch, (2) exception (3) epc
-//		13	:	.								
-//		12	: 	id_select_rs1					Select: (0) rs1, (1) forwarding
-//		11	:	id_select_rs2					Select: (0) rs2, (1) forwarding
-//		10	:	id_alu_port_a_select			Select: (0) rs1, (1) pc
-//		9	:	id_alu_port_b_select			Select: (0) rs2, (1) inmediate
-//		8	:	id_data_reg_mem_select			Select: (0) alu_result (1) memory_data (2) csr
-//		7	:   .
-//		6	:	id_reg_w						Write register enable
-//		5	:	id_mem_en						Data Memory enable
-//		4	:	id_data_size_mem 				Size of bytes to read o write: 	(0000) Write enable = 0
-//		3	:	.																				(0001) byte & Write enable = 1
-//		2	:	.																				(0011) halfword & Write enable = 1
-//		1	:	.																				(1111) word &	Write enable = 1
-//		0	:	id_data_sign_mem		 		Unsigned/Signed data memory
+//		10	:	if_pc_select					Select: (0) pc + 4, (1)	branch, (2) exception (3) epc
+//		9	:	.								
+//		8	: 	id_select_rs1					Select: (0) rs1, (1) forwarding
+//		7	:	id_select_rs2					Select: (0) rs2, (1) forwarding
+//		6	:	id_alu_port_a_select			Select: (0) rs1, (1) pc
+//		5	:	id_alu_port_b_select			Select: (0) rs2, (1) inmediate
+//		4	:	id_data_reg_mem_select			Select: (0) alu_result (1) memory_data (2) csr
+//		3	:   .
+//		2	:	id_reg_w						Write register enable
+//		1	:	id_mem_en						Data Memory enable
+// 		0   :   id_mem_rw 						Select: (0) read, (1) write
 //---------------------------------------------------------------------------------------------------------------------------------
 
-`define R_CTRL_VECTOR				11'b000010xxxxx
-`define I_CTRL_VECTOR				11'b010010xxxxx
-`define I_LOADS_B_CTRL_VECTOR		11'b01011100001
-`define I_LOADS_H_CTRL_VECTOR		11'b01011100001
-`define I_LOADS_W_CTRL_VECTOR		11'b01011100001
-`define I_LOADS_UB_CTRL_VECTOR		11'b01011100000
-`define I_LOADS_UH_CTRL_VECTOR		11'b01011100000
-`define I_JALR_CTRL_VECTOR			11'b110010xxxxx
-`define S_W_CTRL_VECTOR				11'b01xx011111x
-`define S_H_CTRL_VECTOR				11'b01xx010011x
-`define S_B_CTRL_VECTOR				11'b01xx010001x
-`define SB_CTRL_VECTOR				11'bxxxx00xxxxx
-`define U_LUI_CTRL_VECTOR			11'b010010xxxxx
-`define U_AUIPC_CTRL_VECTOR			11'b110010xxxxx
-`define UJ_JAL_CTRL_VECTOR			11'b110010xxxxx
-`define CSR_PRV_CTRL_VECTOR			11'bxxxx00xxxxx
-`define CSR_CMD_CTRL_VECTOR 		11'b001010xxxxx
-`define CSR_CMDI_CTRL_VECTOR		11'b011010xxxxx
+`define R_CTRL_VECTOR				7'b000010x
+`define I_CTRL_VECTOR				7'b010010x
+`define I_LOADS_B_CTRL_VECTOR		7'b0101110
+`define I_LOADS_H_CTRL_VECTOR		7'b0101110
+`define I_LOADS_W_CTRL_VECTOR		7'b0101110
+`define I_LOADS_UB_CTRL_VECTOR		7'b0101110
+`define I_LOADS_UH_CTRL_VECTOR		7'b0101110
+`define I_JALR_CTRL_VECTOR			7'b110010x
+`define S_W_CTRL_VECTOR				7'b01xx011
+`define S_H_CTRL_VECTOR				7'b01xx011
+`define S_B_CTRL_VECTOR				7'b01xx011
+`define SB_CTRL_VECTOR				7'bxxxx00x
+`define U_LUI_CTRL_VECTOR			7'b010010x
+`define U_AUIPC_CTRL_VECTOR			7'b110010x
+`define UJ_JAL_CTRL_VECTOR			7'b110010x
+`define CSR_PRV_CTRL_VECTOR			7'bxxxx00x
+`define CSR_CMD_CTRL_VECTOR 		7'b001010x
+`define CSR_CMDI_CTRL_VECTOR		7'b011010x
 
 //--------------------------------------------------------------------------
 // ALU operations
@@ -128,16 +124,26 @@
 // Size data memory
 //--------------------------------------------------------------------------
 
-`define BYTE				4'b0001
-`define HALFWORD			4'b0011
-`define WORD				4'b1111
+`define BYTE				4'b1001
+`define HALFWORD			4'b1010
+`define WORD				4'b1100
+`define BYTE_UNSIGNED		4'b0001
+`define HALFWORD_UNSIGNED	4'b0010
+
+//--------------------------------------------------------------------------
+// Memormy Read/Write
+//--------------------------------------------------------------------------
+
+`define MEM_READ			4'b0
+`define MEM_W_BYTE			4'b0001
+`define MEM_W_HALFWORD		4'b0011
+`define MEM_W_WORD			4'b1111
 
 //--------------------------------------------------------------------------
 // Hazard unit
 //--------------------------------------------------------------------------
 
 `define RD_ZERO				5'b0
-`define MEM_READ			4'b0
 `define FROM_ALU			1'b0
 `define FROM_MEM			1'b1
 

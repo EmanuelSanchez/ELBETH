@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-29 02:35:02
+//  Last Modified : 2016-03-29 22:53:39
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -26,7 +26,6 @@
 `include "elbeth_id_exs_register.v"
 `include "elbeth_alu.v"
 `include "elbeth_csr_register.v"
-`include "elbeth_zero_signed_extend.v"
 `include "elbeth_bridge_memory.v"
 `include "elbeth_mux4b_2_to_1.v"
 
@@ -37,7 +36,7 @@ module elbeth_core(
 	input  [31:0]		 imem_in_data,		//instruction
 	input  				 imem_ready,
 	input 				 imem_error,
-	output [11:0]		 imem_addr,			//pc
+	output [13:0]		 imem_addr,			//pc
 	output 				 imem_en,
 	output [3:0]		 imem_rw,
 	output [31:0]		 imem_out_data,
@@ -46,7 +45,7 @@ module elbeth_core(
 	input  [31:0]		 dmem_in_data,
 	input 				 dmem_ready,
 	input 				 dmem_error,
-	output [11:0]		 dmem_addr,
+	output [13:0]		 dmem_addr,
 	output 				 dmem_en,
 	output [3:0]		 dmem_rw,
 	output [31:0]		 dmem_out_data
@@ -76,8 +75,7 @@ module elbeth_core(
 	 wire 	[3:0]		id_op_alu;
 	 wire 	[31:0]		id_rs1_data;
 	 wire 	[31:0]		id_rs2_data;
-	 wire 	[3:0] 		id_mem_rw;
-	 wire 	[3:0]		id_data_size;
+	 wire 	[3:0]		id_data_inf;
 	 wire 	[2:0]		id_csr_cmd;
 	 wire 	[11:0]		id_csr_addr;
 	 wire  	[1:0] 		id_data_w_gpr_select;
@@ -106,7 +104,7 @@ module elbeth_core(
 	 wire 	[31:0] 		exs_alu_data_a;
 	 wire 	[31:0]		exs_alu_data_b;
 	 wire 	[31:0]		exs_alu_result;
-	 wire 	[3:0]		exs_data_size;
+	 wire 	[3:0]		exs_data_inf;
 	 wire 	[31:0]		exs_gpr_data_mem;
 	 wire 	[3:0] 		exs_except_src_from_id;
 	 wire 	[3:0] 		exs_except_src;
@@ -114,7 +112,6 @@ module elbeth_core(
 	 wire 				exs_exception;
 	//Wires to data memory
 	 wire	[31:0]		exs_data_memory_out;
-	 wire	[3:0]		exs_mem_rw;
 	 wire 	[3:0] 		exs_except_src_from_mem;
 
 	//Wires to CSR
@@ -193,11 +190,12 @@ module elbeth_core(
 		.imem_ready(id_imem_ready),
 		.imem_except(if_except),
 		.imem_except_src(if_except_src),
-		//Processor data memory 
+		//Processor data memory
+		.dmem_data_inf(exs_data_inf),
+		.dmem_rw(exs_mem_rw),
 		.dmem_en(exs_mem_en),
 		.dmem_addr(exs_alu_result),
 		.dmem_out_data(exs_rs2_data),
-		.dmem_rw(exs_mem_rw),
 		.dmem_in_data(exs_data_memory_out),
 		.dmem_ready(exs_dmem_ready),
 		.dmem_except(exs_except_from_mem),
@@ -244,7 +242,7 @@ module elbeth_core(
 		 .id_rd_addr(id_rd_addr), 
 		 .id_imm_shamt(id_imm_shamt), 
 		 .id_op_alu(id_op_alu),
-		 .id_data_size(id_data_size),
+		 .id_data_inf(id_data_inf),
 		 .id_except(id_except_from_decode),
 		 .id_except_src(id_except_src_decode),
 		 .id_eret(id_eret),
@@ -335,10 +333,9 @@ module elbeth_core(
 		 .id_ctrl_alu_port_b_select(id_alu_port_b_select),  
 		 .id_ctrl_data_w_reg_select(id_data_w_gpr_select), 
 		 .id_ctrl_reg_w(id_gpr_w),
-		 .id_ctrl_mem_en(id_mem_en), 
-		 .id_ctrl_mem_rw(id_mem_rw),
-		 .id_data_size(id_data_size),
-		 .id_data_sign_mem(id_data_sign_mem),
+		 .id_ctrl_mem_en(id_mem_en),
+		 .id_ctrl_mem_rw(id_mem_rw), 
+		 .id_data_inf(id_data_inf),
 		 .id_exception(id_except_to_exs),
 		 .id_except_src(id_except_src),
 		 .id_eret(id_eret),										//Falta en control
@@ -356,11 +353,10 @@ module elbeth_core(
 		 .exs_ctrl_alu_port_a_select(exs_alu_port_a_select), 
 		 .exs_ctrl_alu_port_b_select(exs_alu_port_b_select),  
 		 .exs_ctrl_data_w_reg_select(exs_data_w_gpr_select),
-		 .exs_ctrl_reg_w(exs_gpr_w), 
-		 .exs_ctrl_mem_en(exs_mem_en), 
-		 .exs_ctrl_mem_rw(exs_mem_rw), 
-		 .exs_data_size(exs_data_size),
-		 .exs_data_sign_mem(exs_data_sign_mem),
+		 .exs_ctrl_reg_w(exs_gpr_w),
+		 .exs_ctrl_mem_en(exs_mem_en),
+		 .exs_ctrl_mem_rw(exs_mem_rw),
+		 .exs_data_inf(exs_data_inf),
 		 .exs_exception(exs_except_from_id),
 		 .exs_except_src(exs_except_src_from_id),
 		 .exs_eret(exs_eret),
@@ -401,20 +397,10 @@ module elbeth_core(
 		 .alu_result(exs_alu_result)
 		 );
 
-	elbeth_zero_signed_extend zero_signed_extend (
-		 //Inputs
-		 .data_mem(exs_data_memory_out), 
-		 .ctrl_data_size(exs_data_size), 
-		 //In Control Signals
-		 .ctrl_data_signed(exs_data_sign_mem), 
-		 //Outputs
-		 .out_data_mem(exs_gpr_data_mem)
-		 );
-
 	elbeth_mux_3_to_1 write_reg_data_select(
 		 //Inputs
 		 .mux_in_1(exs_alu_result), 
-		 .mux_in_2(exs_gpr_data_mem),
+		 .mux_in_2(exs_data_memory_out),
 		 .mux_in_3(exs_csr_wdata),
 		 //In Control Signals
 		 .bit_select(exs_data_w_gpr_select), 
@@ -494,8 +480,7 @@ module elbeth_core(
 		 .id_data_w_reg_select(id_data_w_gpr_select), 
 		 .id_reg_w(id_gpr_w),
 		 .id_mem_en(id_mem_en),
-		 .id_mem_rw(id_mem_rw), 
-		 .id_data_sign_mem(id_data_sign_mem),
+		 .id_mem_rw(id_mem_rw),
 		 .id_exception(id_except_to_exs),
 		 .id_except_src_select(id_except_src_select),
 		 .exs_csr_imm_select(exs_csr_imm_select),
