@@ -1,0 +1,93 @@
+[*]
+[*] GTKWave Analyzer v3.3.58 (w)1999-2014 BSI
+[*] Wed Mar 30 19:38:03 2016
+[*]
+[dumpfile] "/home/emanuel/Proyectos/ELBETH/simulation/cosimulation/mult/mult.vcd"
+[dumpfile_mtime] "Wed Mar 30 19:36:18 2016"
+[dumpfile_size] 921429
+[savefile] "/home/emanuel/Proyectos/ELBETH/simulation/cosimulation/mult/read.gtkw"
+[timestart] 0
+[size] 1317 744
+[pos] -1 -1
+*-16.423061 195002 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] mult_top.
+[sst_width] 227
+[signals_width] 338
+[sst_expanded] 1
+[sst_vpaned_height] 273
+@28
+mult_top.mult.clk
+mult_top.mult.rst
+mult_top.mult.working
+@22
+mult_top.mult.comp_a2[7:0]
+mult_top.mult.count[5:0]
+mult_top.mult.data_a[7:0]
+mult_top.mult.data_b[7:0]
+@28
+mult_top.mult.hilo_select
+mult_top.mult.mult_en
+@22
+[color] 7
+mult_top.mult.mult_result[7:0]
+[color] 2
+mult_top.mult.result[16:0]
+@28
+mult_top.mult.result_ready
+mult_top.mult.opt[1:0]
+@22
+[color] 5
+mult_top.mult.a_internal[16:0]
+@c00022
+[color] 5
+mult_top.mult.s_internal[16:0]
+@22
+mult_top.mult.p_internal[16:0]
+@28
+(0)mult_top.mult.s_internal[16:0]
+(1)mult_top.mult.s_internal[16:0]
+(2)mult_top.mult.s_internal[16:0]
+(3)mult_top.mult.s_internal[16:0]
+(4)mult_top.mult.s_internal[16:0]
+(5)mult_top.mult.s_internal[16:0]
+(6)mult_top.mult.s_internal[16:0]
+(7)mult_top.mult.s_internal[16:0]
+(8)mult_top.mult.s_internal[16:0]
+(9)mult_top.mult.s_internal[16:0]
+(10)mult_top.mult.s_internal[16:0]
+(11)mult_top.mult.s_internal[16:0]
+(12)mult_top.mult.s_internal[16:0]
+(13)mult_top.mult.s_internal[16:0]
+(14)mult_top.mult.s_internal[16:0]
+(15)mult_top.mult.s_internal[16:0]
+(16)mult_top.mult.s_internal[16:0]
+@1401200
+-group_end
+@c00022
+[color] 5
+mult_top.mult.p_internal[16:0]
+@28
+(0)mult_top.mult.p_internal[16:0]
+(1)mult_top.mult.p_internal[16:0]
+(2)mult_top.mult.p_internal[16:0]
+(3)mult_top.mult.p_internal[16:0]
+(4)mult_top.mult.p_internal[16:0]
+(5)mult_top.mult.p_internal[16:0]
+(6)mult_top.mult.p_internal[16:0]
+(7)mult_top.mult.p_internal[16:0]
+(8)mult_top.mult.p_internal[16:0]
+(9)mult_top.mult.p_internal[16:0]
+(10)mult_top.mult.p_internal[16:0]
+(11)mult_top.mult.p_internal[16:0]
+(12)mult_top.mult.p_internal[16:0]
+(13)mult_top.mult.p_internal[16:0]
+(14)mult_top.mult.p_internal[16:0]
+(15)mult_top.mult.p_internal[16:0]
+(16)mult_top.mult.p_internal[16:0]
+@1401200
+-group_end
+@22
+mult_top.mult.aux_1[16:0]
+mult_top.mult.aux_2[16:0]
+[pattern_trace] 1
+[pattern_trace] 0
