@@ -8,6 +8,7 @@ import shutil
 import argparse
 import subprocess
 
+os.chdir(os.getcwd()+"/..")
 root = os.getcwd()
 src = root + '/src'
 folder_tests = root + '/simulation/tests'
@@ -30,11 +31,13 @@ def verify():
 
 def mv_utils ():
 	try:
+		shutil.copyfile(root+'/simulation/memory/elbeth_memory.v', src+'/elbeth_memory.v')
 		shutil.copyfile(root+'/simulation/cosimulation/core/core_test.py', src+'/core_test.py')
 		shutil.copyfile(root+'/simulation/cosimulation/core/core_top.v', src+'/core_top.v')
 		shutil.copyfile(root+'/simulation/cosimulation/core/myhdl.vpi', src+'/myhdl.vpi')
 	except:
-		print('File doesn`t exist in "/simulation/core": core_test.py, core_top.v or myhdl.vpi')
+		print('File doesn`t exist in "/simulation/cosimulation/core": core_test.py, core_top.v or myhdl.vpi')
+		print('                      "/simulation/memory": elbeth_memory.v')
 		sys.exit(1)
 
 def mv_test (test_name):
@@ -47,10 +50,10 @@ def mv_test (test_name):
 		sys.exit(1)
 
 def rm():
-	dest = src+"/"+"memory.hex"
-	os.remove(dest)
-	os.remove(src+"/"+"core_test.py")
-	os.remove(src+"/"+"core_top.v")
+	os.remove(src+"/memory.hex")
+	os.remove(src+'/elbeth_memory.v')
+	os.remove(src+"/core_test.py")
+	os.remove(src+"/core_top.v")
 	os.remove(src+'/myhdl.vpi')
 	os.remove('core.vcd')
 	os.remove('core')
