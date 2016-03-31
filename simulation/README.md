@@ -21,22 +21,23 @@ ELBETH
 │   ├── elbeth_hazard_unit.v
 │   ├── elbeth_id_exs_register.v
 │   ├── elbeth_if_id_register.v
-│   ├── elbeth_memory.v
 │   ├── elbeth_mux_2_to_1.v
 │   ├── elbeth_mux_3_to_1.v
 │   ├── elbeth_mux4b_2_to_1.v
 │   ├── elbeth_mux_4_to_1.v
 │   ├── elbeth_pc_register.v
-│   ├── elbeth_reg_file.v
-│   └── elbeth_zero_signed_extend.v
+│   └── elbeth_reg_file.v
 └── simulation/
     ├── cosimulation/
     │	└── core/
     │	    ├── core_test.py/
     │	    ├── core_top.v
     │	    └── myhdl.vpi
-    └── tests
-    	└── all tests
+    ├── tests
+    │	└── all tests (*.hex)
+    ├── memory
+    │	└── elbeth_memory.v
+    └── run.py
 ```
 
 Requeriments
@@ -44,10 +45,8 @@ Requeriments
 
 	-GTKWave
 	-iverilog
-	-sublime (optional)
 
 ##TESTING PROCESSOR
-
 
 
 To test the processor you must use:
