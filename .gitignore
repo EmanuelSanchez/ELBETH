@@ -1,0 +1,15 @@
+#ignore vcd files (files to simulate in gtkwave)
+*.vcd
+
+#ignore vvp files
+*.vvp
+
+#ignore ~ and .~ files
+*~
+*.~
+
+#ignore pycache
+__pycache__/
+
+#ignore cache
+.cache
