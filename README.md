@@ -7,7 +7,7 @@ Based in the Manuals RISCV and in the knolodge acquired in the Course of Compute
 	
 	-Processor of 3 Pipeline Stage with Forwarding Unit and Hazard Detection Unit
 	-Hardward arquitecture codified in verilog language
-	-A set of instruction of 49 User Mode instructions, the System Operations: 3 Privileged Mode instructions and 6 CSR instructions.
+	-A set of instruction of 49 User Mode instructions, the System Operations: 3 Privileged Mode instructions and 6 CSR instructions
 	-No FENCE Operations 
 	-No Floting Point Unit
 	-No Cache.
