@@ -1,11 +1,7 @@
-# run.py script to test the processor
+#SIMULATION
 
-USAGE
-======
+##Files and folders to simulations
 
-Using the script and the system folder:
-
-Simulation
 ```
 ELBETH
 ├── src/
@@ -40,14 +36,16 @@ ELBETH
     └── run.py
 ```
 
-Requeriments
-============
+#SOFTWARE TOOLS
 
 	-GTKWave
 	-iverilog
+	-python3
+	-myHdl for python3
 
-##TESTING PROCESSOR
+#TESTING PROCESSOR
 
+## run.py script
 
 To test the processor you must use:
 	
@@ -72,8 +70,7 @@ optional arguments:
   -a, --all             Run all tests
 
 
-Examples:
-=====================
+###Examples:
 
 To run tests step to step:
 
@@ -86,3 +83,5 @@ To run all tests:
 To run a specific test:
 
 	./run.py core -f name_file.hex
+
+##Verilog test bench
