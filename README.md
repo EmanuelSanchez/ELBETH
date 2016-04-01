@@ -22,7 +22,7 @@ The Elbeth Processor only execute the RISCV32I (Integer) Set of Instructions.
 In this repository you will find all the files needed to simulate the Elbeth Processor
     Processor Codification for Hardware.
     Simulation and Cosimulation Tools. 
-    RAM Memory of 256 Kb de memoria.
+    RAM Memory of 256 Kb.
     Scripts for simulation.
 
 ##Software Details
