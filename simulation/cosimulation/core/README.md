@@ -33,9 +33,9 @@ DIADRAM
 
 
 USAGE
-======
+=====
 
-Using the script and the system folder:
+Using the testcore.py script and the system folder:
 
 Simulation
 ```
@@ -56,11 +56,9 @@ ELBETH
 │   ├── elbeth_memory.v
 │   ├── elbeth_mux_2_to_1.v
 │   ├── elbeth_mux_3_to_1.v
-│   ├── elbeth_mux4b_2_to_1.v
 │   ├── elbeth_mux_4_to_1.v
 │   ├── elbeth_pc_register.v
-│   ├── elbeth_reg_file.v
-│   └── elbeth_zero_signed_extend.v
+│   └── elbeth_reg_file.v
 └── simulation/
     ├── cosimulation/
     │	└── core/
