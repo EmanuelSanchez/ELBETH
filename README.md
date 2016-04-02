@@ -1,4 +1,4 @@
-![logo](Documentation/logo/logo.jpeg)
+![logo](Documentation/logo/elbeth_logo.png)
 
 This is a public project for the Elbeth Processor using the set of instuction RISCV.
 Based in the Manuals RISCV and in the knolodge acquired in the Course of Computer Arquitecture of the Simon Bolivar University
@@ -37,7 +37,7 @@ In this repository you will find all the files needed to simulate the Elbeth Pro
 
 ```
 Elbeth
-├── Documentation/ 				
+├── Documentation/
 ├── simulation/
 │   ├── cosimulation/
 │   │	├── alu/				:
