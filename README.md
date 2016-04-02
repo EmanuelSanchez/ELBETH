@@ -7,7 +7,7 @@ Based in the Manuals RISCV and in the knolodge acquired in the Course of Compute
 	
 	-Processor of 3 Pipeline Stage with Forwarding Unit and Hazard Detection Unit
 	-Hardward arquitecture codified in verilog language
-	-A set of instruction of 49 User Mode instructions, the System Operations: 3 Privileged Mode instructions and 6 CSR instructions.
+	-A set of instruction of 49 User Mode instructions, the System Operations: 3 Privileged Mode instructions and 6 CSR instructions
 	-No FENCE Operations 
 	-No Floting Point Unit
 	-No Cache.
@@ -22,7 +22,7 @@ The Elbeth Processor only execute the RISCV32I (Integer) Set of Instructions.
 In this repository you will find all the files needed to simulate the Elbeth Processor
     Processor Codification for Hardware.
     Simulation and Cosimulation Tools. 
-    RAM Memory of 256 Kb de memoria.
+    RAM Memory of 256 Kb.
     Scripts for simulation.
 
 ##Software Details
