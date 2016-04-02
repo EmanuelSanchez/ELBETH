@@ -1,4 +1,4 @@
-![logo](Documentation/logo/elbeth_logo.png)
+![logo](Documentation/logo/elbeth.png)
 
 This is a public project for the Elbeth Processor using the set of instuction RISCV.
 Based in the Manuals RISCV and in the knolodge acquired in the Course of Computer Arquitecture of the Simon Bolivar University
