@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //==================================================================================================
 //  Filename      : bridge_tb1.v
-//  Last Modified : 2016-03-06 17:23:36
+//  Last Modified : 2016-04-02 21:40:24
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
 //  Email         : emanuelsab@gmail.com & ninisbeth_segovia@hotmail.com
@@ -9,13 +9,12 @@
 //==================================================================================================
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-`include "elbeth_memory.v"
-`include "elbeth_bridge_memory.v"
+`include "elbeth_memory_bridge.v"
 
 
-module bridge_tb1();
+module bridge_tb();
 
-	reg 			clk=1;
+	reg 			clk;
 	reg 			rst;
 
 	wire 			amem_en;
@@ -52,60 +51,20 @@ module bridge_tb1();
 	assign amem_error = 1'b0;	//Without error
 	assign bmem_error = 1'b0;	//Without error
 
-	always @(*) begin
-		#25
-		clk <= ~clk;
-	end // always @(*)
-
 	// test process
 	initial
 	begin
-		$dumpfile("bridge_tb1.vcd");
-		$dumpvars(0,bridge_tb1);
+		$dumpfile("bridge_tb.vcd");
+		$dumpvars(0,bridge_tb);
 
-		//reset
-		#25
-		rst = 1'b1;
-
-		#30
-		rst = 1'b0;
-
-
-		//exception flag and source
-		#20
-		imem_addr = 32'b011;
-
-		//parallel read from memory
 		#50
-		imem_addr = 32'b0;
-		dmem_addr = 32'b1000;
-		dmem_en = 1'b1;
-		dmem_rw = 4'b0000;
+		imem_addr = 31'b011;
 
-		//reset
-		#100
-		rst = 1'b1;
-		imem_addr = 32'b0;
-		dmem_addr = 32'b0;
-		dmem_en = 1'b0;
-		dmem_rw = 4'b0;		
-
-		#30
-		rst = 1'b0;
-		//data memory write a data and instruction memory read a instruction
-		#45
-		imem_addr = 32'b1000;
-		dmem_addr = 32'b100011100;
-		dmem_out_data = 32'hFFFFFFBA;
-		dmem_en = 1'b1;
-		dmem_rw = 4'b1111;	
-
-		#500
+		#50
 		$finish;
-
 	end
 
-	elbeth_bridge_memory brige_memory_cpu(
+	elbeth_memory_bridge brige_memory_cpu(
 		//Memory port A
 		amem_en,
 		amem_addr,
@@ -139,21 +98,4 @@ module bridge_tb1();
 		dmem_except_src
 		);
 
-	elbeth_memory memory1(
-    	clk,
-		rst,
-		amem_en,
-		amem_addr,
-		amem_in_data,
-		amem_rw,
-		amem_out_data,
-		amem_ready,
-		bmem_en,
-		bmem_addr,
-		bmem_in_data,
-		bmem_rw,
-		bmem_out_data,
-		bmem_ready
-		);
-
-endmodule // bridge_tb1
+endmodule // bridge_tb

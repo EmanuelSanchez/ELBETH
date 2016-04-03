@@ -3,7 +3,7 @@
 //==================================================================================================
 //  Filename      : elbeth_core.v
 //  Created On    : Mon Jan  31 09:46:00 2016
-//  Last Modified : 2016-03-30 09:07:54
+//  Last Modified : 2016-04-02 21:38:08
 //  Revision      : 0.1
 //  Author        : Emanuel Sánchez & Ninisbeth Segovia
 //  Company       : Universidad Simón Bolívar
@@ -26,7 +26,7 @@
 `include "elbeth_id_exs_register.v"
 `include "elbeth_alu.v"
 `include "elbeth_csr_register.v"
-`include "elbeth_bridge_memory.v"
+`include "elbeth_memory_bridge.v"
 
 module elbeth_core(
     input			 	 clk,

@@ -8,6 +8,7 @@ os.chdir(os.getcwd()+"/../..")
 root = os.getcwd()
 src = root + '/src'
 folder_utils = root + '/simulation/cosimulation/core'
+memory_folder = root + '/simulation/memory'
 
 def verify():
 	try:
@@ -26,6 +27,7 @@ def mv_utils ():
 		shutil.copyfile(folder_utils+'/core_test.py', src+'/core_test.py')
 		shutil.copyfile(folder_utils+'/core_top.v', src+'/core_top.v')
 		shutil.copyfile(folder_utils+'/myhdl.vpi', src+'/myhdl.vpi')
+		shutil.copyfile(memory_folder+'/elbeth_memory.v', src+'/elbeth_memory.v')
 	except:
 		print('File doesn`t exist in "/simulation/core": core_test.py, core_top.v or myhdl.vpi')
 		sys.exit(1)
@@ -48,6 +50,7 @@ def rm():
 	os.remove(src+"/"+"core_test.py")
 	os.remove(src+"/"+"core_top.v")
 	os.remove(src+'/myhdl.vpi')
+	os.remove(src+'/elbeth_memory.v')
 	os.remove('core.vcd')
 	os.remove('core')
 

@@ -1,12 +1,14 @@
 #!/bin/bash
 #-------------------------------------------------------------------------------
-# Copyright (C) 2016 Emanuel Sánchez <emanuelsab@gmail.com>
-#-------------------------------------------------------------------------------
 #
 # File Name: check_verilog
 #
 # Author:
 #             - Emanuel Sánchez <emanuelsab@gmail.com>
+#
+# Note: Base on check_verilog.sh of Angel Terrones
+# <https://github.com/AngelTerrones/Antares/tree/master/Simulation/scripts>
+#
 # Description:
 #       Check syntax.
 #       Arguments:

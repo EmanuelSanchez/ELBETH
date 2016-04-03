@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #-------------------------------------------------------------------------------
 #
 # File Name: testcore
@@ -42,6 +41,7 @@ SIMULATING_FOLDER=$TESTS_FOLDER/$2
 cd ../
 ROOT_FOLDER="$(pwd)"
 SOURCES_FOLDER=$ROOT_FOLDER/src
+MEMORY_FOLDER
 
 ###############################################################################
 #                       Set Files and extentions                              #

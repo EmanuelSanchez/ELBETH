@@ -8,7 +8,7 @@ ELBETH
 │   ├── elbeth_add4.v
 │   ├── elbeth_alu.v
 │   ├── elbeth_branch_unit.v
-│   ├── elbeth_bridge_memory.v
+│   ├── elbeth_memory_bridge.v
 │   ├── elbeth_control_unit.v
 │   ├── elbeth_core.v
 │   ├── elbeth_csr_register.v
@@ -19,7 +19,6 @@ ELBETH
 │   ├── elbeth_if_id_register.v
 │   ├── elbeth_mux_2_to_1.v
 │   ├── elbeth_mux_3_to_1.v
-│   ├── elbeth_mux4b_2_to_1.v
 │   ├── elbeth_mux_4_to_1.v
 │   ├── elbeth_pc_register.v
 │   └── elbeth_reg_file.v

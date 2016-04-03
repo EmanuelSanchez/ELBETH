@@ -67,7 +67,7 @@ Elbeth
 │   ├── elbeth_add4.v
 │   ├── elbeth_alu.v
 │   ├── elbeth_branch_unit.v
-│   ├── elbeth_bridge_memory.v
+│   ├── elbeth_memory_bridge.v
 │   ├── elbeth_control_unit.v
 │   ├── elbeth_core.v
 │   ├── elbeth_csr_register.v
