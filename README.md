@@ -5,15 +5,20 @@ Based in the Manuals RISCV and in the knolodge acquired in the Course of Compute
 
 ##PROCESSOR DETAILS 
 	
-	-Processor of 3 Pipeline Stage with Forwarding Unit and Hazard Detection Unit
-	-Hardward arquitecture codified in verilog language
-	-A set of instruction of 49 User Mode instructions, the System Operations: 3 Privileged Mode instructions and 6 CSR instructions
+	-Processor of 3 Pipeline Stage
+	-Hazard Detection Unit with Forwarding
+	-Hardware arquitecture described in verilog HDL
+	-Support for ISA RISCV32I
 	-No FENCE Operations 
+	-Support for User-Level and Machine-Level
+	-32 general purpose registers
 	-No Floting Point Unit
-	-No Cache.
-	-No Hardware Multiplication 
-	-No hardware Divition
-	-Control Status Register Module for Interrupts, Exeptiosn, and User/Privileged mode.
+	-No hardware to Multiplication 
+	-No hardware to Divition
+	-Little Endian system
+	-Support for 256 Kb of RAM memory
+	-No Cache
+	-Module for Interrupts and Exceptions Control
 
 The Elbeth Processor only execute the RISCV32I (Integer) Set of Instructions.
 
@@ -24,10 +29,11 @@ In this repository you will find all the files needed to simulate the Elbeth Pro
     Simulation and Cosimulation Tools. 
     RAM Memory of 256 Kb.
     Scripts for simulation.
+    Tests for simulations.
 
 ##Software Details
 
-    The Software tool were used for create and design the Elbeth Processor are:
+The Software tool were used for create and simulate the Elbeth Processor:
      -Icarus Verilog
      -GTKWave
      -Python 3
