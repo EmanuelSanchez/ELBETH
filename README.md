@@ -24,8 +24,8 @@ The Elbeth Processor only execute the RISCV32I (Integer) Set of Instructions.
 
 ##Getting Started
 
-In this repository you will find all the files needed to simulate the Elbeth Processor
-    Processor Codification for Hardware.
+In this repository you will find all the files needed to simulate the Elbeth Processor.
+    Hardware described in code.
     Simulation and Cosimulation Tools. 
     RAM Memory of 256 Kb.
     Scripts for simulation.
@@ -34,10 +34,10 @@ In this repository you will find all the files needed to simulate the Elbeth Pro
 ##Software Details
 
 The Software tool were used for create and simulate the Elbeth Processor:
-     -Icarus Verilog
-     -GTKWave
-     -Python 3
-     -Myhdl for Python3
+	-Icarus Verilog
+	-GTKWave
+	-Python 3
+	-Myhdl for Python3
 
 ##Directory Layout
 
