@@ -3,7 +3,7 @@
 This is a public project for the Elbeth Processor using the set of instuction RISCV.
 Based in the Manuals RISCV and in the knolodge acquired in the Course of Computer Arquitecture of the Simon Bolivar University
 
-##PROCESSOR DETAILS 
+#PROCESSOR DETAILS 
 	
 	-Processor of 3 Pipeline Stage
 	-Hazard Detection Unit with Forwarding
@@ -22,7 +22,7 @@ Based in the Manuals RISCV and in the knolodge acquired in the Course of Compute
 
 The Elbeth Processor only execute the RISCV32I (Integer) Set of Instructions.
 
-##Getting Started
+#Getting Started
 
 In this repository you will find all the files needed to simulate the Elbeth Processor.
     Hardware described in code.
@@ -31,7 +31,7 @@ In this repository you will find all the files needed to simulate the Elbeth Pro
     Scripts for simulation.
     Tests for simulations.
 
-##Software Details
+#Software Details
 
 The Software tool were used for create and simulate the Elbeth Processor:
 	-Icarus Verilog
@@ -39,7 +39,7 @@ The Software tool were used for create and simulate the Elbeth Processor:
 	-Python 3
 	-Myhdl for Python3
 
-##Directory Layout
+#Directory Layout
 
 ```
 Elbeth
@@ -90,7 +90,7 @@ Elbeth
 │   └── elbeth_reg_file.v
 └── README.md
 ```
-##Simulation
+#Simulation
 
 There are different ways to test the ELBETH processor, one of them is using the cosimulation of myhdl library and other is running tests in verilog.
 
