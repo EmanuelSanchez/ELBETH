@@ -98,4 +98,4 @@ To compile and test the processor using the cosimulation use the run.py script i
 
 	./run.py -h
 
-For others options or more information about test the pocessor or a module of it see the README file into simulation folder.s
+For others options or more information about test the pocessor or a module of it see the README file into simulation folder.
