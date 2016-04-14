@@ -86,9 +86,10 @@ def run_simulation(args):
 		mv_utils()
 		for test in list_tests:
 			mv_test(test)
-			print("------------------------------------------------------------")
+			print("\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+			print("\033[93m" + "============================================================" + '\033[0m')
 			print("\tRunning:  " +test)
-			print("------------------------------------------------------------")
+			print("\033[93m" + "============================================================" + '\033[0m')
 			pytest.main(['--resultlog=./log', '--tb=no', src+'/core_test.py'])
 			menu(test[:-4])
 		rm()
@@ -122,7 +123,7 @@ def run_simulation(args):
 			print (item)
 		print ("------------------------------------------------------------")
 		print ("\tRESUMEN:")
-		print ("\tTotal tests: {0}.\n\tFailed tests: {1}. \n\tSucces tests: {2}.").format(i+j,j,i)
+		print ("\tTotal tests: {0}.\n\tFailed tests: {1}. \n\tSucces tests: {2}.".format(i+j,j,i))
 		print ("------------------------------------------------------------")
 	else:
 		mv_utils()
@@ -140,6 +141,7 @@ def list_module_test():
     if len(tests) == 0:
         print("No available tests: {0}".format(cwd))
     else:
+        print("\n")
         print("------------------------------------------------------------")
         for test in tests:
             print(test)
@@ -157,18 +159,18 @@ def menu(test,ext='.dump'):
 	print("  \t3 - Open the simulation in GTKWave")
 	print("  \t4 - To Open test and simulation")
 	opt = input("\n\tSelect:   ")
-	if(opt==0):
+	if(opt=='0'):
 		sys.exit(1)
-	elif(opt==1):
+	elif(opt=='1'):
 		return
-	elif(opt==2):
+	elif(opt=='2'):
 		os.system("gedit "+root+"/simulation/dump_tests/"+test+ext)
 		menu(test)
 		return
-	elif(opt==3):
+	elif(opt=='3'):
 		os.system("gtkwave core.vcd")
 		return
-	elif(opt==4):
+	elif(opt=='4'):
 		os.system("subl "+root+"/simulation/dump_tests/"+test+ext)
 		os.system("gtkwave core.vcd")
 		return
